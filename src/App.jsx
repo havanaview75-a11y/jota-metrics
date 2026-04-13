@@ -959,6 +959,13 @@ export default function App() {
   const [customTo, setCustomTo] = useState("");
   const [editingTrade, setEditingTrade] = useState(null);
 
+const ADMIN_EMAIL = "havanaview75@gmail.com";
+
+const [authEmail, setAuthEmail] = useState("");
+const [authPassword, setAuthPassword] = useState("");
+const [showLoginForm, setShowLoginForm] = useState(false);
+const [authLoading, setAuthLoading] = useState(true);
+
   const fetchTrades = async () => {
     setLoading(true);
 
@@ -981,6 +988,84 @@ export default function App() {
     fetchTrades();
   }, []);
 
+const handleAdminLogin = async () => {
+  if (!authEmail || !authPassword) {
+    alert("Enter email and password.");
+    return;
+  }
+
+  setAuthLoading(true);
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: authEmail,
+    password: authPassword,
+  });
+
+  setAuthLoading(false);
+
+  if (error) {
+    console.error("Login error:", error);
+    alert(error.message);
+    return;
+  }
+
+  setShowLoginForm(false);
+  setAuthPassword("");
+};
+
+const handleAdminLogout = async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Logout error:", error);
+    alert(error.message);
+    return;
+  }
+
+  setIsAdmin(false);
+  setEditingTrade(null);
+  setAuthPassword("");
+
+  if (activeTab === "new") {
+    setActiveTab("overview");
+  }
+};
+
+useEffect(() => {
+  let mounted = true;
+
+  const loadSession = async () => {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Auth session error:", error);
+    }
+
+    if (!mounted) return;
+
+    const email = session?.user?.email || "";
+    setIsAdmin(email === ADMIN_EMAIL);
+    setAuthLoading(false);
+  };
+
+  loadSession();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    const email = session?.user?.email || "";
+    setIsAdmin(email === ADMIN_EMAIL);
+    setAuthLoading(false);
+  });
+
+  return () => {
+    mounted = false;
+    subscription.unsubscribe();
+  };
+}, []);
   const handleDeleteTrade = async (id) => {
     const confirmed = window.confirm("Delete this trade?");
     if (!confirmed) return;
@@ -1135,25 +1220,58 @@ if (activeTab === "new") {
     <div className="min-h-screen bg-[#020817] p-4 text-white">
       <div className="mx-auto max-w-[360px] rounded-[34px] border border-[#243041] bg-[#0b1220] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
 <div className="mb-3 flex justify-between text-[11px] text-[#8fa0b7]">
-  <button
-    onClick={() => {
-      const pass = prompt("Enter admin password");
-      if (pass === "1234") setIsAdmin(true);
-      else alert("Wrong password");
-    }}
-    className="text-[#60a5fa]"
-  >
-    Admin Login
-  </button>
+  <div className="mb-3">
+  <div className="flex items-center justify-between text-[11px] text-[#8fa0b7]">
+    {!isAdmin ? (
+      <button
+        onClick={() => setShowLoginForm((v) => !v)}
+        className="text-[#60a5fa]"
+      >
+        {showLoginForm ? "Close Login" : "Admin Login"}
+      </button>
+    ) : (
+      <button
+        onClick={handleAdminLogout}
+        className="text-[#f87171]"
+      >
+        Logout
+      </button>
+    )}
 
-  {isAdmin && (
-    <button
-      onClick={() => setIsAdmin(false)}
-      className="text-[#f87171]"
-    >
-      Logout
-    </button>
-  )}
+    <span>{isAdmin ? "Admin mode" : "Viewer mode"}</span>
+  </div>
+
+  {!isAdmin && showLoginForm ? (
+    <div className="mt-3 rounded-[16px] border border-[#243041] bg-[#111827] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+      <div className="mb-2 text-[12px] text-[#c4d0df]">Admin access</div>
+
+      <div className="space-y-2">
+        <input
+          type="email"
+          value={authEmail}
+          onChange={(e) => setAuthEmail(e.target.value)}
+          placeholder="Email"
+          className="w-full rounded-[12px] border border-[#243041] bg-[#0b1220] px-3 py-2 text-[13px] text-white outline-none placeholder:text-[#6f8198]"
+        />
+
+        <input
+          type="password"
+          value={authPassword}
+          onChange={(e) => setAuthPassword(e.target.value)}
+          placeholder="Password"
+          className="w-full rounded-[12px] border border-[#243041] bg-[#0b1220] px-3 py-2 text-[13px] text-white outline-none placeholder:text-[#6f8198]"
+        />
+
+        <button
+          onClick={handleAdminLogin}
+          disabled={authLoading}
+          className="w-full rounded-[12px] bg-[#2563eb] px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
+        >
+          {authLoading ? "Signing in..." : "Sign in"}
+        </button>
+      </div>
+    </div>
+  ) : null}
 </div>
         <div className="mb-4 flex items-center justify-between pt-1">
           <div className="text-[12px] font-medium text-[#dbe5f3]">9:41</div>
