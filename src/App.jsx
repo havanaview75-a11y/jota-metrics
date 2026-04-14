@@ -16,6 +16,8 @@ import {
   Trash2,
 } from "lucide-react";
 
+// ─── CSV helpers ────────────────────────────────────────────────────────────
+
 function parseCsvLine(line) {
   const result = [];
   let current = "";
@@ -23,7 +25,6 @@ function parseCsvLine(line) {
 
   for (let i = 0; i < line.length; i += 1) {
     const char = line[i];
-
     if (char === '"') {
       if (inQuotes && line[i + 1] === '"') {
         current += '"';
@@ -38,7 +39,6 @@ function parseCsvLine(line) {
       current += char;
     }
   }
-
   result.push(current.trim());
   return result;
 }
@@ -58,7 +58,6 @@ function parseTradesCsv(text) {
     .map((line) => {
       const values = parseCsvLine(line);
       const row = {};
-
       headers.forEach((header, i) => {
         row[header] = (values[i] || "").trim();
       });
@@ -106,20 +105,12 @@ function parseTradesCsv(text) {
 
       const notes = row.notes || row.note || row.comment || "";
 
-      return {
-        date,
-        symbol,
-        direction,
-        tp1hit,
-        runnerhit,
-        tp1pnl,
-        runnerpnl,
-        pnl,
-        notes,
-      };
+      return { date, symbol, direction, tp1hit, runnerhit, tp1pnl, runnerpnl, pnl, notes };
     })
     .filter(Boolean);
 }
+
+// ─── Formatters ──────────────────────────────────────────────────────────────
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-US", {
@@ -139,6 +130,8 @@ function formatDateShort(dateStr) {
   });
 }
 
+// ─── Filter / metric helpers ─────────────────────────────────────────────────
+
 function applyFilters(trades, range, symbol, customFrom, customTo) {
   let filtered = [...trades];
 
@@ -151,17 +144,14 @@ function applyFilters(trades, range, symbol, customFrom, customTo) {
   if (range === "CUSTOM") {
     return filtered.filter((trade) => {
       const tradeDate = new Date(`${trade.date}T00:00:00`);
-
       if (customFrom) {
         const fromDate = new Date(`${customFrom}T00:00:00`);
         if (tradeDate < fromDate) return false;
       }
-
       if (customTo) {
         const toDate = new Date(`${customTo}T23:59:59`);
         if (tradeDate > toDate) return false;
       }
-
       return true;
     });
   }
@@ -169,7 +159,6 @@ function applyFilters(trades, range, symbol, customFrom, customTo) {
   if (range !== "ALL") {
     const now = new Date();
     let days = 0;
-
     if (range === "7D") days = 7;
     if (range === "30D") days = 30;
     if (range === "90D") days = 90;
@@ -195,7 +184,6 @@ function getRangeLabel(trades, range, customFrom, customTo) {
           year: "numeric",
         })
       : "Start";
-
     const right = customTo
       ? new Date(`${customTo}T00:00:00`).toLocaleDateString("en-US", {
           month: "short",
@@ -203,7 +191,6 @@ function getRangeLabel(trades, range, customFrom, customTo) {
           year: "numeric",
         })
       : "Today";
-
     return `${left} — ${right}`;
   }
 
@@ -213,25 +200,15 @@ function getRangeLabel(trades, range, customFrom, customTo) {
   const first = new Date(`${sorted[0].date}T00:00:00`);
   const last = new Date(`${sorted[sorted.length - 1].date}T00:00:00`);
 
-  const left = first.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-  const right = last.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
+  const left = first.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const right = last.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   return `${left} — ${right}`;
 }
 
 function getOverviewMetrics(trades) {
   const totalPnL = trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
   const totalTP1 = trades.reduce((sum, t) => sum + Number(t.tp1pnl || 0), 0);
-  const totalRunner = trades.reduce(
-    (sum, t) => sum + Number(t.runnerpnl || 0),
-    0
-  );
+  const totalRunner = trades.reduce((sum, t) => sum + Number(t.runnerpnl || 0), 0);
 
   const wins = trades.filter((t) => Number(t.pnl || 0) > 0).length;
   const tp1Hits = trades.filter((t) => t.tp1hit).length;
@@ -239,10 +216,7 @@ function getOverviewMetrics(trades) {
 
   const winRate = trades.length ? Math.round((wins / trades.length) * 100) : 0;
   const tp1Rate = trades.length ? Math.round((tp1Hits / trades.length) * 100) : 0;
-  const runnerRate = trades.length
-    ? Math.round((runnerHits / trades.length) * 100)
-    : 0;
-
+  const runnerRate = trades.length ? Math.round((runnerHits / trades.length) * 100) : 0;
   const expectancy = trades.length ? Math.round(totalPnL / trades.length) : 0;
 
   let equity = 0;
@@ -287,6 +261,8 @@ function getChartBars(trades) {
       pnl: Number(trade.pnl || 0),
     }));
 }
+
+// ─── Shared UI atoms ─────────────────────────────────────────────────────────
 
 function StatCard({ icon: Icon, label, value, sub, tone = "blue" }) {
   const toneClasses = {
@@ -334,25 +310,20 @@ function MiniBarChart({ data }) {
   return (
     <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
       <div className="mb-3 flex items-center justify-between">
-        <div className="text-[14px] font-medium text-[#e5edf7]">Recent P&L</div>
+        <div className="text-[14px] font-medium text-[#e5edf7]">Recent P&amp;L</div>
         <div className="text-[11px] text-[#8fa0b7]">Last {data.length} trades</div>
       </div>
 
       <div className="flex h-[110px] items-end gap-2">
         {data.map((item) => {
           const positive = item.pnl >= 0;
-          const height = Math.max(
-            12,
-            Math.round((Math.abs(item.pnl) / maxAbs) * 80)
-          );
+          const height = Math.max(12, Math.round((Math.abs(item.pnl) / maxAbs) * 80));
 
           return (
             <div key={item.label} className="flex flex-1 flex-col items-center gap-2">
               <div className="flex h-[82px] w-full items-end">
                 <div
-                  className={`w-full rounded-t-md ${
-                    positive ? "bg-[#22c55e]" : "bg-[#ef4444]"
-                  }`}
+                  className={`w-full rounded-t-md ${positive ? "bg-[#22c55e]" : "bg-[#ef4444]"}`}
                   style={{ height: `${height}px` }}
                 />
               </div>
@@ -366,6 +337,9 @@ function MiniBarChart({ data }) {
     </div>
   );
 }
+
+// ─── Screens ─────────────────────────────────────────────────────────────────
+
 function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
   const metrics = getOverviewMetrics(trades);
   const bars = getChartBars(trades);
@@ -379,14 +353,9 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
     <div className="space-y-4">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-[24px] leading-none tracking-tight text-white">
-            JoTa
-          </div>
-          <div className="mt-1 text-[12px] text-[#8fa0b7]">
-            Trading performance dashboard
-          </div>
+          <div className="text-[24px] leading-none tracking-tight text-white">JoTa</div>
+          <div className="mt-1 text-[12px] text-[#8fa0b7]">Trading performance dashboard</div>
         </div>
-
         <div className="text-right">
           <div className="text-[12px] text-[#dbe5f3]">
             {getRangeLabel(trades, range, customFrom, customTo)}
@@ -449,22 +418,16 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
 
       <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-[14px] font-medium text-[#e5edf7]">
-            Runner performance
-          </div>
+          <div className="text-[14px] font-medium text-[#e5edf7]">Runner performance</div>
           <StatusPill color="blue">Pro metric</StatusPill>
         </div>
-
         <div className="flex items-end justify-between gap-3">
           <div>
             <div className="text-[28px] font-semibold text-[#93c5fd]">
               {metrics.runnerCaptureRate}%
             </div>
-            <div className="text-[12px] text-[#8fa0b7]">
-              Runner Capture Rate
-            </div>
+            <div className="text-[12px] text-[#8fa0b7]">Runner Capture Rate</div>
           </div>
-
           <div className="text-right text-[12px] text-[#8fa0b7]">
             <div>TP1 Total: {formatCurrency(metrics.totalTP1)}</div>
             <div>Runner Total: {formatCurrency(metrics.totalRunner)}</div>
@@ -484,23 +447,15 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
         <div>
           <div className="flex items-center gap-2 text-[13px] text-[#e5edf7]">
             <Circle
-              className={`h-2.5 w-2.5 fill-current ${
-                positive ? "text-[#22c55e]" : "text-[#ef4444]"
-              }`}
+              className={`h-2.5 w-2.5 fill-current ${positive ? "text-[#22c55e]" : "text-[#ef4444]"}`}
             />
             <span>{formatDateShort(trade.date)}</span>
           </div>
-
           <div className="mt-1 text-[12px] text-[#8fa0b7]">
             {trade.symbol} · {trade.direction}
           </div>
         </div>
-
-        <div
-          className={`text-[20px] font-semibold ${
-            positive ? "text-[#22c55e]" : "text-[#f87171]"
-          }`}
-        >
+        <div className={`text-[20px] font-semibold ${positive ? "text-[#22c55e]" : "text-[#f87171]"}`}>
           {formatCurrency(trade.pnl)}
         </div>
       </div>
@@ -509,11 +464,9 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
         <StatusPill color={trade.direction === "LONG" ? "blue" : "gold"}>
           {trade.direction}
         </StatusPill>
-
         <StatusPill color={trade.tp1hit ? "green" : "red"}>
           {trade.tp1hit ? "TP1 ✓" : "TP1 ✕"}
         </StatusPill>
-
         <StatusPill color={trade.runnerhit ? "green" : "red"}>
           {trade.runnerhit ? "Runner ✓" : "Runner ✕"}
         </StatusPill>
@@ -527,7 +480,6 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
               <Pencil className="h-3.5 w-3.5" />
               Edit
             </button>
-
             <button
               onClick={() => onDelete(trade.id)}
               className="flex items-center gap-1 rounded-full border border-[#5b2121] bg-[#311616] px-3 py-1 text-[11px] text-[#fca5a5] transition hover:opacity-90"
@@ -580,18 +532,17 @@ function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
 }
 
 function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const [mode, setMode] = useState("manual");
   const [date, setDate] = useState(editingTrade?.date || today);
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
-  const [pnlInput, setPnlInput] = useState(
-    editingTrade ? String(editingTrade.pnl ?? "") : ""
-  );
+  const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
   const [notes, setNotes] = useState(editingTrade?.notes || "");
-  const [csvText, setCsvText] = useState(`date,symbol,direction,pnl,notes
-2026-04-12,MYM,LONG,120,Imported sample`);
+  const [csvText, setCsvText] = useState(
+    "date,symbol,direction,pnl,notes\n2026-04-12,MYM,LONG,120,Imported sample"
+  );
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -614,7 +565,6 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
 
   const handleSubmit = async () => {
     const pnl = Number(pnlInput || 0);
-
     if (Number.isNaN(pnl)) {
       alert("P&L must be a valid number.");
       return;
@@ -627,7 +577,6 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
     const runnerhit = tp1hit && runnerpnl > 0;
 
     setSaving(true);
-
     await onSave({
       id: editingTrade?.id,
       date,
@@ -640,7 +589,6 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
       pnl,
       notes,
     });
-
     setSaving(false);
 
     if (!editingTrade) {
@@ -690,7 +638,6 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
         >
           Manual
         </button>
-
         <button
           onClick={() => setMode("import")}
           className={`${segmentedBase} ${
@@ -725,9 +672,7 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
           </div>
 
           <div>
-            <label className="mb-2 block text-[13px] text-[#c4d0df]">
-              Dirección
-            </label>
+            <label className="mb-2 block text-[13px] text-[#c4d0df]">Dirección</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setDirection("LONG")}
@@ -753,7 +698,7 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
           </div>
 
           <div>
-            <label className="mb-1 block text-[13px] text-[#c4d0df]">P&L ($)</label>
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">P&amp;L ($)</label>
             <input
               value={pnlInput}
               onChange={(e) => setPnlInput(e.target.value)}
@@ -778,11 +723,7 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
               disabled={saving}
               className="w-full rounded-[14px] bg-[#2563eb] px-4 py-3 text-[14px] font-medium text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)] disabled:opacity-60"
             >
-              {saving
-                ? "Guardando..."
-                : editingTrade
-                ? "Guardar cambios"
-                : "Guardar entrada"}
+              {saving ? "Guardando..." : editingTrade ? "Guardar cambios" : "Guardar entrada"}
             </button>
 
             {editingTrade ? (
@@ -821,9 +762,7 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
               const reader = new FileReader();
               reader.onload = (ev) => {
                 const text = ev.target?.result;
-                if (typeof text === "string") {
-                  setCsvText(text);
-                }
+                if (typeof text === "string") setCsvText(text);
               };
               reader.readAsText(file);
             }}
@@ -842,19 +781,12 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
     </div>
   );
 }
-function FilterBar({
-  range,
-  setRange,
-  symbol,
-  setSymbol,
-  customFrom,
-  setCustomFrom,
-  customTo,
-  setCustomTo,
-}) {
+
+// ─── FilterBar ────────────────────────────────────────────────────────────────
+
+function FilterBar({ range, setRange, symbol, setSymbol, customFrom, setCustomFrom, customTo, setCustomTo }) {
   const selectClass =
     "rounded-xl border border-[#243041] bg-[#111827] px-3 py-2 text-[12px] text-white outline-none";
-
   const inputClass =
     "rounded-xl border border-[#243041] bg-[#111827] px-3 py-2 text-[12px] text-white outline-none";
 
@@ -900,7 +832,6 @@ function FilterBar({
               className={inputClass}
             />
           </div>
-
           <div>
             <label className="mb-1 block text-[11px] text-[#8fa0b7]">To</label>
             <input
@@ -916,6 +847,8 @@ function FilterBar({
   );
 }
 
+// ─── BottomNav ────────────────────────────────────────────────────────────────
+
 function BottomNav({ active, onChange, isAdmin }) {
   const items = [
     { key: "overview", label: "Overview", icon: BarChart3 },
@@ -925,14 +858,11 @@ function BottomNav({ active, onChange, isAdmin }) {
 
   return (
     <div
-      className={`mt-auto grid ${
-        isAdmin ? "grid-cols-3" : "grid-cols-2"
-      } gap-0 rounded-[22px] border border-[#243041] bg-[#0f172a] p-1`}
+      className={`mt-auto grid ${isAdmin ? "grid-cols-3" : "grid-cols-2"} gap-0 rounded-[22px] border border-[#243041] bg-[#0f172a] p-1`}
     >
       {items.map((item) => {
         const Icon = item.icon;
         const selected = active === item.key;
-
         return (
           <button
             key={item.key}
@@ -943,11 +873,7 @@ function BottomNav({ active, onChange, isAdmin }) {
                 : "text-[#8fa0b7]"
             }`}
           >
-            <Icon
-              className={`mb-1 h-4 w-4 ${
-                selected ? "text-[#60a5fa]" : "text-[#8fa0b7]"
-              }`}
-            />
+            <Icon className={`mb-1 h-4 w-4 ${selected ? "text-[#60a5fa]" : "text-[#8fa0b7]"}`} />
             {item.label}
           </button>
         );
@@ -955,6 +881,8 @@ function BottomNav({ active, onChange, isAdmin }) {
     </div>
   );
 }
+
+// ─── App (root) ───────────────────────────────────────────────────────────────
 
 export default function App() {
   const ADMIN_EMAIL = "havanaview75@gmail.com";
@@ -976,7 +904,6 @@ export default function App() {
 
   const fetchTrades = async () => {
     setLoading(true);
-
     const { data, error } = await supabase
       .from("trades")
       .select("*")
@@ -988,7 +915,6 @@ export default function App() {
     } else {
       setTrades(data || []);
     }
-
     setLoading(false);
   };
 
@@ -1000,17 +926,9 @@ export default function App() {
     let mounted = true;
 
     const loadSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Auth session error:", error);
-      }
-
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) console.error("Auth session error:", error);
       if (!mounted) return;
-
       const email = session?.user?.email || "";
       setIsAdmin(email === ADMIN_EMAIL);
       setAuthLoading(false);
@@ -1018,9 +936,7 @@ export default function App() {
 
     loadSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const email = session?.user?.email || "";
       setIsAdmin(email === ADMIN_EMAIL);
       setAuthLoading(false);
@@ -1037,56 +953,43 @@ export default function App() {
       alert("Enter email and password.");
       return;
     }
-
     setAuthLoading(true);
-
     const { error } = await supabase.auth.signInWithPassword({
       email: authEmail,
       password: authPassword,
     });
-
     setAuthLoading(false);
-
     if (error) {
       console.error("Login error:", error);
       alert(error.message);
       return;
     }
-
     setShowLoginForm(false);
     setAuthPassword("");
   };
 
   const handleAdminLogout = async () => {
     const { error } = await supabase.auth.signOut();
-
     if (error) {
       console.error("Logout error:", error);
       alert(error.message);
       return;
     }
-
     setIsAdmin(false);
     setEditingTrade(null);
     setAuthPassword("");
-
-    if (activeTab === "new") {
-      setActiveTab("overview");
-    }
+    if (activeTab === "new") setActiveTab("overview");
   };
 
   const handleDeleteTrade = async (id) => {
     const confirmed = window.confirm(`Delete this trade? ID: ${id}`);
     if (!confirmed) return;
-
     const { error } = await supabase.from("trades").delete().eq("id", id);
-
     if (error) {
       console.error("Delete error:", error);
       alert(`Delete failed: ${error.message}`);
       return;
     }
-
     await fetchTrades();
   };
 
@@ -1108,7 +1011,6 @@ export default function App() {
           notes: trade.notes,
         })
         .eq("id", trade.id);
-
       error = result.error;
     } else {
       const result = await supabase.from("trades").insert([
@@ -1124,7 +1026,6 @@ export default function App() {
           notes: trade.notes,
         },
       ]);
-
       error = result.error;
     }
 
@@ -1141,21 +1042,20 @@ export default function App() {
 
   const handleImportTrades = async (importedTrades) => {
     const { error } = await supabase.from("trades").insert(importedTrades);
-
     if (error) {
       console.error("Bulk insert error:", error);
       alert(error.message);
       return;
     }
-
     await fetchTrades();
     setEditingTrade(null);
     setActiveTab("records");
   };
 
-  const filteredTrades = useMemo(() => {
-    return applyFilters(trades, range, symbol, customFrom, customTo);
-  }, [trades, range, symbol, customFrom, customTo]);
+  const filteredTrades = useMemo(
+    () => applyFilters(trades, range, symbol, customFrom, customTo),
+    [trades, range, symbol, customFrom, customTo]
+  );
 
   const content = useMemo(() => {
     if (loading) {
@@ -1201,7 +1101,6 @@ export default function App() {
           </div>
         );
       }
-
       return (
         <NewTradeScreen
           onSave={handleSaveTrade}
@@ -1216,21 +1115,12 @@ export default function App() {
     }
 
     return null;
-  }, [
-    loading,
-    activeTab,
-    filteredTrades,
-    range,
-    symbol,
-    customFrom,
-    customTo,
-    editingTrade,
-    isAdmin,
-  ]);
+  }, [loading, activeTab, filteredTrades, range, symbol, customFrom, customTo, editingTrade, isAdmin]);
 
   return (
     <div className="min-h-screen bg-[#020817] p-4 text-white">
       <div className="mx-auto max-w-[360px] rounded-[34px] border border-[#243041] bg-[#0b1220] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+
         <div className="mb-3">
           <div className="flex items-center justify-between text-[11px] text-[#8fa0b7]">
             {!isAdmin ? (
@@ -1245,14 +1135,12 @@ export default function App() {
                 Logout
               </button>
             )}
-
             <span>{isAdmin ? "Admin mode" : "Viewer mode"}</span>
           </div>
 
           {!isAdmin && showLoginForm ? (
             <div className="mt-3 rounded-[16px] border border-[#243041] bg-[#111827] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
               <div className="mb-2 text-[12px] text-[#c4d0df]">Admin access</div>
-
               <div className="space-y-2">
                 <input
                   type="email"
@@ -1261,7 +1149,6 @@ export default function App() {
                   placeholder="Email"
                   className="w-full rounded-[12px] border border-[#243041] bg-[#0b1220] px-3 py-2 text-[13px] text-white outline-none placeholder:text-[#6f8198]"
                 />
-
                 <input
                   type="password"
                   value={authPassword}
@@ -1269,7 +1156,6 @@ export default function App() {
                   placeholder="Password"
                   className="w-full rounded-[12px] border border-[#243041] bg-[#0b1220] px-3 py-2 text-[13px] text-white outline-none placeholder:text-[#6f8198]"
                 />
-
                 <button
                   onClick={handleAdminLogin}
                   disabled={authLoading}
