@@ -626,6 +626,14 @@ setSlCustomLevel("");
     }
   }, [editingTrade, today]);
 
+useEffect(() => {
+  if (disableRunner) {
+    setRunnerContracts(0);
+    setRunnerLevel(90);
+    setRunnerCustomLevel("");
+  }
+}, [disableRunner]);
+
   const handleSubmit = async () => {
     const tickValue = 0.5;
 
@@ -642,14 +650,22 @@ let runnerpnl = 0;
 let tp1hit = false;
 let runnerhit = false;
 
-// 🟡 BE → todo 0
-if (tp1Level === "BE") {
+// 🟡 TP1 = BE → total en 0
+if (effectiveTp1Ticks === 0) {
   pnl = 0;
+  tp1pnl = 0;
+  runnerpnl = 0;
+  tp1hit = false;
+  runnerhit = false;
 }
 
-// 🔴 TP1 falla → todo al SL
-else if (tp1Result === "SL") {
+// 🔴 TP1 < 0 → toda la entrada al SL
+else if (effectiveTp1Ticks < 0) {
   pnl = slTicks * tickValue * totalContracts;
+  tp1pnl = pnl;
+  runnerpnl = 0;
+  tp1hit = false;
+  runnerhit = false;
 }
 
 // 🟢 TP1 pega
@@ -692,7 +708,11 @@ else {
   symbol: String(symbol || "MYM").toUpperCase(),
   direction,
   contracts: tp1Contracts + runnerContracts,
-  tp1Level,
+  tp1Level: tp1Level === "OTHER"
+  ? Number(tp1CustomLevel || 0)
+  : tp1Level === "BE"
+  ? 0
+  : tp1Level,
   runnerLevel: runnerLevel === "OTHER" ? null : runnerLevel,
 runnerCustomLevel: runnerLevel === "OTHER"
   ? Number(runnerCustomLevel || 0)
@@ -735,6 +755,15 @@ runnerCustomLevel: runnerLevel === "OTHER"
 
   const inputClass =
     "w-full rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-3 text-[14px] text-white outline-none placeholder:text-[#6f8198]";
+
+  const effectiveTp1Ticks =
+  tp1Level === "OTHER"
+    ? Number(tp1CustomLevel || 0)
+    : tp1Level === "BE"
+    ? 0
+    : Number(tp1Level);
+
+const disableRunner = effectiveTp1Ticks <= 0;
 
   return (
     <div className="space-y-4">
@@ -887,13 +916,14 @@ runnerCustomLevel: runnerLevel === "OTHER"
 <div>
   <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Level</label>
   <select
-    value={runnerLevel}
-    onChange={(e) => {
-  const value = e.target.value;
-  setRunnerLevel(value === "OTHER" ? value : Number(value));
-}}
-    className={inputClass}
-  >
+  value={runnerLevel}
+  onChange={(e) => {
+    const value = e.target.value;
+    setRunnerLevel(value === "OTHER" ? value : Number(value));
+  }}
+  className={inputClass}
+  disabled={disableRunner}
+>
     <option value={50}>50 ticks</option>
 <option value={90}>90 ticks</option>
 <option value={120}>120 ticks</option>
@@ -902,7 +932,7 @@ runnerCustomLevel: runnerLevel === "OTHER"
 <option value={200}>200 ticks</option>
 <option value="OTHER">Other</option>
   </select>
-  {runnerLevel === "OTHER" ? (
+  {runnerLevel === "OTHER" && !disableRunner ? (
   <div>
     <label className="mb-1 block text-[13px] text-[#c4d0df]">
       Custom Runner Level
@@ -960,11 +990,11 @@ runnerCustomLevel: runnerLevel === "OTHER"
 <div>
   <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Contracts</label>
   <select
-    value={runnerContracts}
-    onChange={(e) => setRunnerContracts(Number(e.target.value))}
-    className={inputClass}
-    disabled={tp1Result === "SL"}
-  >
+  value={runnerContracts}
+  onChange={(e) => setRunnerContracts(Number(e.target.value))}
+  className={inputClass}
+  disabled={disableRunner}
+>
     {[0,1,2,3,4,5,6,7,8,9].map((n) => (
       <option key={n} value={n}>{n}</option>
     ))}
