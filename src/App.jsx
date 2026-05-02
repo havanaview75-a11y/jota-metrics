@@ -574,8 +574,6 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
 const [tp1Level, setTp1Level] = useState(editingTrade?.tp1Level || 100);
 const [runnerLevel, setRunnerLevel] = useState(editingTrade?.runnerLevel || 90);
 const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerCustomLevel || "");
-const [tp1Result, setTp1Result] = useState(editingTrade?.tp1Result || "HIT");
-const [runnerResult, setRunnerResult] = useState(editingTrade?.runnerResult || "HIT");
 const [tp1Contracts, setTp1Contracts] = useState(editingTrade?.tp1Contracts || 1);
 const [runnerContracts, setRunnerContracts] = useState(editingTrade?.runnerContracts || 3);
 const [slLevel, setSlLevel] = useState(editingTrade?.slLevel || -150);
@@ -599,8 +597,6 @@ const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel |
 setTp1Level(editingTrade.tp1Level || 100);
 setRunnerLevel(editingTrade.runnerLevel || 90);
 setRunnerCustomLevel(editingTrade.runnerCustomLevel || "");
-setTp1Result(editingTrade.tp1Result || "HIT");
-setRunnerResult(editingTrade.runnerResult || "HIT");
 setTp1Contracts(editingTrade.tp1Contracts || 1);
 setRunnerContracts(editingTrade.runnerContracts || 8);
 setSlLevel(editingTrade.slLevel || -150);
@@ -966,17 +962,7 @@ runnerCustomLevel: runnerLevel === "OTHER"
 </div>
 
 <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Result</label>
-  <select
-    value={runnerResult}
-    onChange={(e) => setRunnerResult(e.target.value)}
-    className={inputClass}
-    disabled={tp1Result === "SL"}
-  >
-    <option value="HIT">HIT</option>
-    <option value="SL">SL</option>
-    <option value="BE">BE</option>
-  </select>
+  
 </div>
 
 <div>
