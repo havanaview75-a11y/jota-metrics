@@ -644,12 +644,12 @@ useEffect(() => {
 }, [effectiveTp1Ticks]);
 
 useEffect(() => {
-  if (disableRunner || effectiveTp1Ticks === 50) {
+  if (effectiveTp1Ticks <= 50) {
     setRunnerContracts(0);
     setRunnerLevel(0);
     setRunnerCustomLevel("");
   }
-}, [disableRunner, effectiveTp1Ticks]);
+}, [effectiveTp1Ticks]);
 
   const handleSubmit = async () => {
     const tickValue = 0.5;
