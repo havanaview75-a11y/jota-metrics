@@ -644,7 +644,7 @@ setSlCustomLevel("");
   date,
   symbol: String(symbol || "MYM").toUpperCase(),
   direction,
-  contracts,
+  contracts: tp1Contracts + runnerContracts,
   tp1Level,
   runnerLevel: runnerLevel === "OTHER" ? null : runnerLevel,
 runnerCustomLevel: runnerLevel === "OTHER"
@@ -765,10 +765,6 @@ runnerCustomLevel: runnerLevel === "OTHER"
             </div>
           </div>
           <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">Contracts</label>
-
-  <div className="grid grid-cols-3 gap-2">
-    <div>
   <label className="mb-1 block text-[13px] text-[#c4d0df]">Contracts</label>
 
   <div className="grid grid-cols-3 gap-2 items-end">
