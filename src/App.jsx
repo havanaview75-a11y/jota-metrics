@@ -105,7 +105,17 @@ function parseTradesCsv(text) {
 
       const notes = row.notes || row.note || row.comment || "";
 
-      return { date, symbol, direction, tp1hit, runnerhit, tp1pnl, runnerpnl, pnl, notes };
+      return {
+        date,
+        symbol,
+        direction,
+        tp1hit,
+        runnerhit,
+        tp1pnl,
+        runnerpnl,
+        pnl,
+        notes,
+      };
     })
     .filter(Boolean);
 }
@@ -200,26 +210,41 @@ function getRangeLabel(trades, range, customFrom, customTo) {
   const first = new Date(`${sorted[0].date}T00:00:00`);
   const last = new Date(`${sorted[sorted.length - 1].date}T00:00:00`);
 
-  const left = first.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const right = last.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const left = first.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+  const right = last.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
   return `${left} — ${right}`;
 }
 
 function getOverviewMetrics(trades) {
-    trades = trades.filter(
+  trades = trades.filter(
     (t) => String(t.notes || "").toLowerCase() !== "no trade today"
   );
+
   const totalPnL = trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
   const totalTP1 = trades.reduce((sum, t) => sum + Number(t.tp1pnl || 0), 0);
-  const totalRunner = trades.reduce((sum, t) => sum + Number(t.runnerpnl || 0), 0);
+  const totalRunner = trades.reduce(
+    (sum, t) => sum + Number(t.runnerpnl || 0),
+    0
+  );
 
   const wins = trades.filter((t) => Number(t.pnl || 0) > 0).length;
   const tp1Hits = trades.filter((t) => t.tp1hit).length;
   const runnerHits = trades.filter((t) => t.runnerhit).length;
 
   const winRate = trades.length ? Math.round((wins / trades.length) * 100) : 0;
-  const tp1Rate = trades.length ? Math.round((tp1Hits / trades.length) * 100) : 0;
-  const runnerRate = trades.length ? Math.round((runnerHits / trades.length) * 100) : 0;
+  const tp1Rate = trades.length
+    ? Math.round((tp1Hits / trades.length) * 100)
+    : 0;
+  const runnerRate = trades.length
+    ? Math.round((runnerHits / trades.length) * 100)
+    : 0;
   const expectancy = trades.length ? Math.round(totalPnL / trades.length) : 0;
 
   let equity = 0;
@@ -287,7 +312,9 @@ function StatCard({ icon: Icon, label, value, sub, tone = "blue" }) {
         {Icon ? <Icon className="h-4 w-4" /> : null}
       </div>
       <div className="mt-2 text-[24px] font-semibold">{value}</div>
-      {sub ? <div className="mt-1 text-[12px] text-[#9fb0c6]">{sub}</div> : null}
+      {sub ? (
+        <div className="mt-1 text-[12px] text-[#9fb0c6]">{sub}</div>
+      ) : null}
     </div>
   );
 }
@@ -314,20 +341,32 @@ function MiniBarChart({ data }) {
   return (
     <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
       <div className="mb-3 flex items-center justify-between">
-        <div className="text-[14px] font-medium text-[#e5edf7]">Recent P&amp;L</div>
-        <div className="text-[11px] text-[#8fa0b7]">Last {data.length} trades</div>
+        <div className="text-[14px] font-medium text-[#e5edf7]">
+          Recent P&amp;L
+        </div>
+        <div className="text-[11px] text-[#8fa0b7]">
+          Last {data.length} trades
+        </div>
       </div>
 
       <div className="flex h-[110px] items-end gap-2">
         {data.map((item) => {
           const positive = item.pnl >= 0;
-          const height = Math.max(12, Math.round((Math.abs(item.pnl) / maxAbs) * 80));
+          const height = Math.max(
+            12,
+            Math.round((Math.abs(item.pnl) / maxAbs) * 80)
+          );
 
           return (
-            <div key={item.label} className="flex flex-1 flex-col items-center gap-2">
+            <div
+              key={item.label}
+              className="flex flex-1 flex-col items-center gap-2"
+            >
               <div className="flex h-[82px] w-full items-end">
                 <div
-                  className={`w-full rounded-t-md ${positive ? "bg-[#22c55e]" : "bg-[#ef4444]"}`}
+                  className={`w-full rounded-t-md ${
+                    positive ? "bg-[#22c55e]" : "bg-[#ef4444]"
+                  }`}
                   style={{ height: `${height}px` }}
                 />
               </div>
@@ -350,15 +389,23 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
 
   const filterLabel =
     range === "CUSTOM"
-      ? `Custom${customFrom || customTo ? ` · ${customFrom || "..."} → ${customTo || "..."}` : ""}`
+      ? `Custom${
+          customFrom || customTo
+            ? ` · ${customFrom || "..."} → ${customTo || "..."}`
+            : ""
+        }`
       : `${range} · ${symbol}`;
 
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-[24px] leading-none tracking-tight text-white">JoTa</div>
-          <div className="mt-1 text-[12px] text-[#8fa0b7]">Trading performance dashboard</div>
+          <div className="text-[24px] leading-none tracking-tight text-white">
+            JoTa
+          </div>
+          <div className="mt-1 text-[12px] text-[#8fa0b7]">
+            Trading performance dashboard
+          </div>
         </div>
         <div className="text-right">
           <div className="text-[12px] text-[#dbe5f3]">
@@ -422,7 +469,9 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
 
       <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-[14px] font-medium text-[#e5edf7]">Runner performance</div>
+          <div className="text-[14px] font-medium text-[#e5edf7]">
+            Runner performance
+          </div>
           <StatusPill color="blue">Pro metric</StatusPill>
         </div>
         <div className="flex items-end justify-between gap-3">
@@ -430,7 +479,9 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
             <div className="text-[28px] font-semibold text-[#93c5fd]">
               {metrics.runnerCaptureRate}%
             </div>
-            <div className="text-[12px] text-[#8fa0b7]">Runner Capture Rate</div>
+            <div className="text-[12px] text-[#8fa0b7]">
+              Runner Capture Rate
+            </div>
           </div>
           <div className="text-right text-[12px] text-[#8fa0b7]">
             <div>TP1 Total: {formatCurrency(metrics.totalTP1)}</div>
@@ -443,97 +494,127 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
 }
 
 function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
+  const isNoTradeDay =
+    String(trade.notes || "").toLowerCase() === "no trade today";
   const positive = Number(trade.pnl || 0) >= 0;
 
   return (
-  <div className="rounded-[22px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
-    <div className="flex items-start justify-between gap-3">
-      <div>
-        <div className="flex items-center gap-2 text-[13px] text-[#e5edf7]">
-          <Circle
-            className={`h-2.5 w-2.5 fill-current ${
-              positive ? "text-[#22c55e]" : "text-[#ef4444]"
-            }`}
-          />
-          <span>{formatDateShort(trade.date)}</span>
+    <div className="rounded-[22px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-[13px] text-[#e5edf7]">
+            <Circle
+              className={`h-2.5 w-2.5 fill-current ${
+                isNoTradeDay
+                  ? "text-[#fbbf24]"
+                  : positive
+                  ? "text-[#22c55e]"
+                  : "text-[#ef4444]"
+              }`}
+            />
+            <span>{formatDateShort(trade.date)}</span>
+          </div>
+
+          <div className="text-[11px] text-[#6b7a90]">
+            Total:{" "}
+            {isNoTradeDay
+              ? "-"
+              : Math.max(
+                  trade.tp1Level || 100,
+                  trade.runnerCustomLevel || trade.runnerLevel || 90
+                )}{" "}
+            {isNoTradeDay ? "" : "ticks"}
+          </div>
         </div>
 
-       <div className="text-[11px] text-[#6b7a90]">
-  Total:{" "}
-  {Math.max(
-    trade.tp1Level || 100,
-    trade.runnerCustomLevel || trade.runnerLevel || 90
-  )}{" "}
-  ticks
-</div>
-      </div>
-
-      <div
-  className={`text-[26px] font-bold tracking-tight ${
-    positive ? "text-[#22c55e]" : "text-[#f87171]"
-  }`}
->
-  {formatCurrency(trade.pnl)}
-</div>
-    </div>
-
-    <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
-      <div className="grid grid-cols-3 gap-2 text-[12px]">
-        <div className="text-[#8fa0b7]">Target</div>
-        <div className="text-center text-[#8fa0b7]">Ticks</div>
-        <div className="text-right text-[#8fa0b7]">Status</div>
-
-        <div className="font-medium text-[#e5edf7]">TP1</div>
-        <div className="text-center text-[#93c5fd]">
-          {trade.tp1Level || 100}
-        </div>
-        <div className={`text-right font-semibold ${trade.tp1hit ? "text-[#22c55e]" : "text-[#f87171]"}`}>
-          {trade.tp1hit ? "✓" : "✕"}
-        </div>
-
-        <div className="font-medium text-[#e5edf7]">Runner</div>
-        <div className="text-center font-semibold text-[#fbbf24]">
-          {trade.runnerCustomLevel || trade.runnerLevel || 90}
-        </div>
-        <div className={`text-right font-semibold ${trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"}`}>
-          {trade.runnerhit ? "✓" : "✕"}
+        <div
+          className={`text-[26px] font-bold tracking-tight ${
+            isNoTradeDay
+              ? "text-[#fbbf24]"
+              : positive
+              ? "text-[#22c55e]"
+              : "text-[#f87171]"
+          }`}
+        >
+          {isNoTradeDay ? "-" : formatCurrency(trade.pnl)}
         </div>
       </div>
-    </div>
 
-    <div className="mt-4 flex items-center justify-between gap-2">
-      <StatusPill color={trade.direction === "LONG" ? "blue" : "gold"}>
-        {trade.direction}
-      </StatusPill>
+      {isNoTradeDay ? (
+        <div className="mt-4 rounded-[16px] border border-[#5f4718] bg-[#352914] p-3 text-center text-[13px] font-medium text-[#fcd34d]">
+          No Trade Day
+        </div>
+      ) : (
+        <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
+          <div className="grid grid-cols-3 gap-2 text-[12px]">
+            <div className="text-[#8fa0b7]">Target</div>
+            <div className="text-center text-[#8fa0b7]">Ticks</div>
+            <div className="text-right text-[#8fa0b7]">Status</div>
 
-      {isAdmin ? (
-        <div className="flex gap-2">
-          <button
-            onClick={() => onEdit(trade)}
-            className="flex items-center gap-1 rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-1.5 text-[11px] text-[#93c5fd] transition hover:opacity-90"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            Edit
-          </button>
+            <div className="font-medium text-[#e5edf7]">TP1</div>
+            <div className="text-center text-[#93c5fd]">
+              {trade.tp1Level || 100}
+            </div>
+            <div
+              className={`text-right font-semibold ${
+                trade.tp1hit ? "text-[#22c55e]" : "text-[#f87171]"
+              }`}
+            >
+              {trade.tp1hit ? "✓" : "✕"}
+            </div>
 
-          <button
-            onClick={() => onDelete(trade.id)}
-            className="flex items-center gap-1 rounded-full border border-[#5b2121] bg-[#311616] px-3 py-1.5 text-[11px] text-[#fca5a5] transition hover:opacity-90"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            Delete
-          </button>
+            <div className="font-medium text-[#e5edf7]">Runner</div>
+            <div className="text-center font-semibold text-[#fbbf24]">
+              {trade.runnerCustomLevel || trade.runnerLevel || 90}
+            </div>
+            <div
+              className={`text-right font-semibold ${
+                trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"
+              }`}
+            >
+              {trade.runnerhit ? "✓" : "✕"}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <StatusPill
+          color={
+            isNoTradeDay ? "gold" : trade.direction === "LONG" ? "blue" : "gold"
+          }
+        >
+          {isNoTradeDay ? "NO TRADE" : trade.direction}
+        </StatusPill>
+
+        {isAdmin ? (
+          <div className="flex gap-2">
+            <button
+              onClick={() => onEdit(trade)}
+              className="flex items-center gap-1 rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-1.5 text-[11px] text-[#93c5fd] transition hover:opacity-90"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Edit
+            </button>
+
+            <button
+              onClick={() => onDelete(trade.id)}
+              className="flex items-center gap-1 rounded-full border border-[#5b2121] bg-[#311616] px-3 py-1.5 text-[11px] text-[#fca5a5] transition hover:opacity-90"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {trade.notes ? (
+        <div className="mt-3 rounded-xl border border-[#1d2939] bg-[#0b1220] px-3 py-2 text-[12px] text-[#9fb0c6]">
+          {trade.notes}
         </div>
       ) : null}
     </div>
-
-    {trade.notes ? (
-      <div className="mt-3 rounded-xl border border-[#1d2939] bg-[#0b1220] px-3 py-2 text-[12px] text-[#9fb0c6]">
-        {trade.notes}
-      </div>
-    ) : null}
-  </div>
-);
+  );
 }
 
 function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
@@ -567,7 +648,14 @@ function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
   );
 }
 
-function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit, noTradeDay, setNoTradeDay }) {
+function NewTradeScreen({
+  onSave,
+  onImport,
+  editingTrade,
+  onCancelEdit,
+  noTradeDay,
+  setNoTradeDay,
+}) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const [mode, setMode] = useState("manual");
@@ -575,14 +663,26 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit, noTradeD
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
   const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
-const [tp1Level, setTp1Level] = useState(editingTrade?.tp1Level || 100);
-const [runnerLevel, setRunnerLevel] = useState(editingTrade?.runnerLevel || 90);
-const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerCustomLevel || "");
-const [tp1Contracts, setTp1Contracts] = useState(editingTrade?.tp1Contracts || 1);
-const [runnerContracts, setRunnerContracts] = useState(editingTrade?.runnerContracts || 3);
-const [slLevel, setSlLevel] = useState(editingTrade?.slLevel || -150);
-const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel || "");
-  const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
+  const [tp1Level, setTp1Level] = useState(editingTrade?.tp1Level || 100);
+  const [runnerLevel, setRunnerLevel] = useState(
+    editingTrade?.runnerLevel || 90
+  );
+  const [runnerCustomLevel, setRunnerCustomLevel] = useState(
+    editingTrade?.runnerCustomLevel || ""
+  );
+  const [tp1Contracts, setTp1Contracts] = useState(
+    editingTrade?.tp1Contracts || 1
+  );
+  const [runnerContracts, setRunnerContracts] = useState(
+    editingTrade?.runnerContracts || 3
+  );
+  const [slLevel, setSlLevel] = useState(editingTrade?.slLevel || -150);
+  const [slCustomLevel, setSlCustomLevel] = useState(
+    editingTrade?.slCustomLevel || ""
+  );
+  const [pnlInput, setPnlInput] = useState(
+    editingTrade ? String(editingTrade.pnl ?? "") : ""
+  );
   const [tp1CustomLevel, setTp1CustomLevel] = useState("");
   const [notes, setNotes] = useState(editingTrade?.notes || "");
   const [csvText, setCsvText] = useState(
@@ -591,32 +691,63 @@ const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel |
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const noTradeDisplayClass =
+    "h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-[#8fa0b7] opacity-70";
+
   useEffect(() => {
-  if (noTradeDay) {
-    setNotes("No trade today");
-  } else {
-    setNotes((currentNotes) =>
-      currentNotes === "No trade today" ? "" : currentNotes
-    );
-  }
-}, [noTradeDay]);
+    if (noTradeDay) {
+      setNotes("No trade today");
+      setDirection("NONE");
+      setContracts(0);
+      setTp1Contracts(0);
+      setRunnerContracts(0);
+      setTp1Level(0);
+      setRunnerLevel(0);
+      setRunnerCustomLevel("");
+      setSlLevel(0);
+      setSlCustomLevel("");
+      setPnlInput("0");
+    } else {
+      setNotes((currentNotes) =>
+        currentNotes === "No trade today" ? "" : currentNotes
+      );
+      setDirection("LONG");
+      setContracts(9);
+      setTp1Contracts(1);
+      setRunnerContracts(4);
+      setTp1Level(100);
+      setRunnerLevel(90);
+      setSlLevel(-150);
+      setPnlInput("");
+    }
+  }, [noTradeDay]);
 
   useEffect(() => {
     if (editingTrade) {
+      const editingIsNoTradeDay =
+        String(editingTrade.notes || "").toLowerCase() === "no trade today";
+
       setMode("manual");
       setDate(editingTrade.date || today);
       setSymbol(editingTrade.symbol || "MYM");
-      setDirection(editingTrade.direction || "LONG");
-      setContracts(editingTrade.contracts || 9);
-setTp1Level(editingTrade.tp1Level || 100);
-setRunnerLevel(editingTrade.runnerLevel || 90);
-setRunnerCustomLevel(editingTrade.runnerCustomLevel || "");
-setTp1Contracts(editingTrade.tp1Contracts || 1);
-setRunnerContracts(editingTrade.runnerContracts || 8);
-setSlLevel(editingTrade.slLevel || -150);
-setSlCustomLevel(editingTrade.slCustomLevel || "");
-      setPnlInput(String(editingTrade.pnl ?? ""));
-      setNotes(editingTrade.notes || "");
+      setDirection(editingIsNoTradeDay ? "NONE" : editingTrade.direction || "LONG");
+      setContracts(editingIsNoTradeDay ? 0 : editingTrade.contracts || 9);
+      setTp1Level(editingIsNoTradeDay ? 0 : editingTrade.tp1Level || 100);
+      setRunnerLevel(editingIsNoTradeDay ? 0 : editingTrade.runnerLevel || 90);
+      setRunnerCustomLevel(
+        editingIsNoTradeDay ? "" : editingTrade.runnerCustomLevel || ""
+      );
+      setTp1Contracts(editingIsNoTradeDay ? 0 : editingTrade.tp1Contracts || 1);
+      setRunnerContracts(
+        editingIsNoTradeDay ? 0 : editingTrade.runnerContracts || 8
+      );
+      setSlLevel(editingIsNoTradeDay ? 0 : editingTrade.slLevel || -150);
+      setSlCustomLevel(
+        editingIsNoTradeDay ? "" : editingTrade.slCustomLevel || ""
+      );
+      setPnlInput(editingIsNoTradeDay ? "0" : String(editingTrade.pnl ?? ""));
+      setNotes(editingIsNoTradeDay ? "No trade today" : editingTrade.notes || "");
+      setNoTradeDay(editingIsNoTradeDay);
     } else {
       setDate(today);
       setSymbol("MYM");
@@ -624,157 +755,146 @@ setSlCustomLevel(editingTrade.slCustomLevel || "");
       setPnlInput("");
       setNotes("");
       setContracts(9);
-setTp1Level(100);
-setRunnerLevel(90);
-setRunnerCustomLevel("");
-setTp1Contracts(1);
-setRunnerContracts(4);
-setSlLevel(-150);
-setSlCustomLevel("");
+      setTp1Level(100);
+      setRunnerLevel(90);
+      setRunnerCustomLevel("");
+      setTp1Contracts(1);
+      setRunnerContracts(4);
+      setSlLevel(-150);
+      setSlCustomLevel("");
     }
-  }, [editingTrade, today]);
+  }, [editingTrade, today, setNoTradeDay]);
 
-const effectiveTp1Ticks =
-  tp1Level === "OTHER"
-    ? Number(tp1CustomLevel || 0)
-    : tp1Level === "BE"
-    ? 0
-    : Number(tp1Level);
+  const effectiveTp1Ticks =
+    tp1Level === "OTHER"
+      ? Number(tp1CustomLevel || 0)
+      : tp1Level === "BE"
+      ? 0
+      : Number(tp1Level);
 
-const disableRunner = effectiveTp1Ticks <= 0;
+  const disableRunner = noTradeDay || effectiveTp1Ticks <= 0;
 
-const autoSL =
-  effectiveTp1Ticks >= 0
-    ? 0
-    : -150;
+  const autoSL = effectiveTp1Ticks >= 0 ? 0 : -150;
 
-const disableSL = true;
+  const disableSL = true;
 
-useEffect(() => {
-  if (effectiveTp1Ticks < 0) {
-    setSlLevel(effectiveTp1Ticks);
-    setSlCustomLevel("");
-  }
-}, [effectiveTp1Ticks]);
+  useEffect(() => {
+    if (noTradeDay) return;
+    if (effectiveTp1Ticks < 0) {
+      setSlLevel(effectiveTp1Ticks);
+      setSlCustomLevel("");
+    }
+  }, [effectiveTp1Ticks, noTradeDay]);
 
-useEffect(() => {
-  if (effectiveTp1Ticks <= 50) {
-    setRunnerContracts(0);
-    setRunnerLevel(0);
-    setRunnerCustomLevel("");
-  }
-}, [effectiveTp1Ticks]);
+  useEffect(() => {
+    if (noTradeDay) return;
+    if (effectiveTp1Ticks <= 50) {
+      setRunnerContracts(0);
+      setRunnerLevel(0);
+      setRunnerCustomLevel("");
+    }
+  }, [effectiveTp1Ticks, noTradeDay]);
 
   const handleSubmit = async () => {
     const tickValue = 0.5;
+
     if (noTradeDay) {
-  setSaving(true);
+      setSaving(true);
 
-  await onSave({
-    id: editingTrade?.id,
-    date,
-    symbol: String(symbol || "MYM").toUpperCase(),
-    direction: "NONE",
-    contracts: 0,
-    tp1Level: 0,
-    runnerLevel: 0,
-    runnerCustomLevel: null,
-    tp1hit: false,
-    runnerhit: false,
-    tp1pnl: 0,
-    runnerpnl: 0,
-    pnl: 0,
-    notes: "No trade today",
-  });
+      await onSave({
+        id: editingTrade?.id,
+        date,
+        symbol: String(symbol || "MYM").toUpperCase(),
+        direction: "NONE",
+        contracts: 0,
+        tp1Level: 0,
+        runnerLevel: 0,
+        runnerCustomLevel: null,
+        tp1hit: false,
+        runnerhit: false,
+        tp1pnl: 0,
+        runnerpnl: 0,
+        pnl: 0,
+        notes: "No trade today",
+      });
 
-  setSaving(false);
-  setNoTradeDay(false);
-  return;
-}
+      setSaving(false);
+      setNoTradeDay(false);
+      return;
+    }
 
-const totalContracts = tp1Contracts + runnerContracts;
+    const totalContracts = tp1Contracts + runnerContracts;
 
-const slTicks =
-  autoSL !== null
-    ? autoSL
-    : slLevel === "MANUAL"
-    ? Number(slCustomLevel || 0)
-    : slLevel;
+    const slTicks =
+      autoSL !== null
+        ? autoSL
+        : slLevel === "MANUAL"
+        ? Number(slCustomLevel || 0)
+        : slLevel;
 
-let pnl = 0;
-let tp1pnl = 0;
-let runnerpnl = 0;
-let tp1hit = false;
-let runnerhit = false;
+    let pnl = 0;
+    let tp1pnl = 0;
+    let runnerpnl = 0;
+    let tp1hit = false;
+    let runnerhit = false;
 
-// 🟡 TP1 = BE → total en 0
-if (effectiveTp1Ticks === 0) {
-  pnl = 0;
-  tp1pnl = 0;
-  runnerpnl = 0;
-  tp1hit = false;
-  runnerhit = false;
-}
+    if (effectiveTp1Ticks === 0) {
+      pnl = 0;
+      tp1pnl = 0;
+      runnerpnl = 0;
+      tp1hit = false;
+      runnerhit = false;
+    } else if (effectiveTp1Ticks < 0) {
+      pnl = slTicks * tickValue * totalContracts;
+      tp1pnl = pnl;
+      runnerpnl = 0;
+      tp1hit = false;
+      runnerhit = false;
+    } else {
+      const tp1Ticks =
+        tp1Level === "OTHER" ? Number(tp1CustomLevel || 0) : tp1Level;
 
-// 🔴 TP1 < 0 → toda la entrada al SL
-else if (effectiveTp1Ticks < 0) {
-  pnl = slTicks * tickValue * totalContracts;
-  tp1pnl = pnl;
-  runnerpnl = 0;
-  tp1hit = false;
-  runnerhit = false;
-}
+      const runnerTicks =
+        runnerLevel === "OTHER" ? Number(runnerCustomLevel || 0) : runnerLevel;
 
-// 🟢 TP1 pega
-else {
-  const tp1Ticks =
-    tp1Level === "OTHER"
-      ? Number(tp1CustomLevel || 0)
-      : tp1Level;
+      tp1hit = true;
+      tp1pnl = tp1Ticks * tickValue * tp1Contracts;
 
-  const runnerTicks =
-    runnerLevel === "OTHER"
-      ? Number(runnerCustomLevel || 0)
-      : runnerLevel;
+      if (tp1Ticks <= 50) {
+        runnerpnl = slTicks * tickValue * runnerContracts;
+      } else {
+        runnerpnl = runnerTicks * tickValue * runnerContracts;
+        runnerhit = runnerTicks > 0;
+      }
 
-  tp1hit = true;
-
-  tp1pnl = tp1Ticks * tickValue * tp1Contracts;
-
-  // 🔥 regla: TP1 ≤ 50 → runner muere en SL
-  if (tp1Ticks <= 50) {
-    runnerpnl = slTicks * tickValue * runnerContracts;
-  } else {
-    runnerpnl = runnerTicks * tickValue * runnerContracts;
-runnerhit = runnerTicks > 0;
-  }
-
-  pnl = tp1pnl + runnerpnl;
-}
+      pnl = tp1pnl + runnerpnl;
+    }
 
     setSaving(true);
-  await onSave({
-  id: editingTrade?.id,
-  date,
-  symbol: String(symbol || "MYM").toUpperCase(),
-  direction,
-  contracts: tp1Contracts + runnerContracts,
-  tp1Level: tp1Level === "OTHER"
-  ? Number(tp1CustomLevel || 0)
-  : tp1Level === "BE"
-  ? 0
-  : tp1Level,
-  runnerLevel: runnerLevel === "OTHER" ? null : runnerLevel,
-runnerCustomLevel: runnerLevel === "OTHER"
-  ? Number(runnerCustomLevel || 0)
-  : null,
-  tp1hit,
-  runnerhit,
-  tp1pnl,
-  runnerpnl,
-  pnl,
-  notes,
-});
+
+    await onSave({
+      id: editingTrade?.id,
+      date,
+      symbol: String(symbol || "MYM").toUpperCase(),
+      direction,
+      contracts: tp1Contracts + runnerContracts,
+      tp1Level:
+        tp1Level === "OTHER"
+          ? Number(tp1CustomLevel || 0)
+          : tp1Level === "BE"
+          ? 0
+          : tp1Level,
+      runnerLevel: runnerLevel === "OTHER" ? null : runnerLevel,
+      runnerCustomLevel:
+        runnerLevel === "OTHER" ? Number(runnerCustomLevel || 0) : null,
+      tp1hit,
+      runnerhit,
+      tp1pnl,
+      runnerpnl,
+      pnl,
+      notes,
+    });
+
     setSaving(false);
 
     if (!editingTrade) {
@@ -802,40 +922,42 @@ runnerCustomLevel: runnerLevel === "OTHER"
   };
 
   const segmentedBase =
-    "flex-1 rounded-[12px] border px-3 py-3 text-center text-[13px] transition-colors";
+    "flex-1 rounded-[12px] border px-3 py-3 text-center text-[13px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
 
   const inputClass =
-    "w-full rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-3 text-[14px] text-white outline-none placeholder:text-[#6f8198]";
+    "w-full rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-3 text-[14px] text-white outline-none placeholder:text-[#6f8198] disabled:opacity-50 disabled:cursor-not-allowed";
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-  <div>
-    <div className="text-[24px] tracking-tight text-white">
-      {editingTrade ? "Editar entrada" : "Nueva entrada"}
-    </div>
+        <div>
+          <div className="text-[24px] tracking-tight text-white">
+            {editingTrade ? "Editar entrada" : "Nueva entrada"}
+          </div>
 
-    <label className="mt-2 flex items-center gap-2 text-[12px] text-[#c4d0df]">
-      <input
-        type="checkbox"
-        checked={noTradeDay}
-        onChange={(e) => setNoTradeDay(e.target.checked)}
-        className="h-4 w-4 accent-[#2563eb]"
-      />
-      No trade day
-    </label>
-  </div>
+          <label className="mt-2 flex items-center gap-2 text-[12px] text-[#c4d0df]">
+            <input
+              type="checkbox"
+              checked={noTradeDay}
+              onChange={(e) => setNoTradeDay(e.target.checked)}
+              className="h-4 w-4 accent-[#2563eb]"
+            />
+            No trade day
+          </label>
+        </div>
 
-  <input
-    value={symbol}
-    onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-    className="w-[88px] rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-2 text-center text-[13px] text-white outline-none"
-  />
-</div>
+        <input
+          value={noTradeDay ? "-" : symbol}
+          onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+          disabled={noTradeDay}
+          className="w-[88px] rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-2 text-center text-[13px] text-white outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+        />
+      </div>
 
       <div className="flex gap-2">
         <button
           onClick={() => setMode("manual")}
+          disabled={noTradeDay}
           className={`${segmentedBase} ${
             mode === "manual"
               ? "border-[#1e3a5f] bg-[#10253f] text-[#93c5fd]"
@@ -846,6 +968,7 @@ runnerCustomLevel: runnerLevel === "OTHER"
         </button>
         <button
           onClick={() => setMode("import")}
+          disabled={noTradeDay}
           className={`${segmentedBase} ${
             mode === "import"
               ? "border-[#1e3a5f] bg-[#10253f] text-[#93c5fd]"
@@ -859,206 +982,253 @@ runnerCustomLevel: runnerLevel === "OTHER"
       {mode === "manual" ? (
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-[13px] text-[#c4d0df]">Fecha</label>
-            <input
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              type="date"
-              className={inputClass}
-            />
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">
+              Fecha
+            </label>
+            {noTradeDay ? (
+              <div className={noTradeDisplayClass}>-</div>
+            ) : (
+              <input
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                type="date"
+                className={inputClass}
+              />
+            )}
           </div>
 
           <div>
-            <label className="mb-2 block text-[13px] text-[#c4d0df]">Dirección</label>
+            <label className="mb-2 block text-[13px] text-[#c4d0df]">
+              Dirección
+            </label>
             <div className="flex gap-2">
               <button
-                onClick={() => setDirection("LONG")}
+                onClick={() => !noTradeDay && setDirection("LONG")}
+                disabled={noTradeDay}
                 className={`${segmentedBase} ${
                   direction === "LONG"
                     ? "border-[#166534] bg-[#0f2a1e] text-[#86efac]"
                     : "border-[#243041] bg-[#111827] text-[#c4d0df]"
                 }`}
               >
-                LONG
+                {noTradeDay ? "-" : "LONG"}
               </button>
               <button
-                onClick={() => setDirection("SHORT")}
+                onClick={() => !noTradeDay && setDirection("SHORT")}
+                disabled={noTradeDay}
                 className={`${segmentedBase} ${
                   direction === "SHORT"
                     ? "border-[#7f1d1d] bg-[#311616] text-[#fca5a5]"
                     : "border-[#243041] bg-[#111827] text-[#c4d0df]"
                 }`}
               >
-                SHORT
+                {noTradeDay ? "-" : "SHORT"}
               </button>
             </div>
           </div>
-          <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">Contracts</label>
-
-  <div className="grid grid-cols-3 gap-2 items-end">
-    <div>
-      <label className="mb-1 block text-[11px] text-[#8fa0b7]">TP1</label>
-      <select
-        value={tp1Contracts}
-        onChange={(e) => setTp1Contracts(Number(e.target.value))}
-        className={inputClass}
-      >
-        {[0,1,2,3,4,5,6,7,8,9].map((n) => (
-          <option key={n} value={n}>{n}</option>
-        ))}
-      </select>
-    </div>
-
-    <div>
-      <label className="mb-1 block text-[11px] text-[#8fa0b7]">Runner</label>
-      <select
-        value={runnerContracts}
-        onChange={(e) => setRunnerContracts(Number(e.target.value))}
-        className={inputClass}
-      >
-        {[0,1,2,3,4,5,6,7,8,9].map((n) => (
-          <option key={n} value={n}>{n}</option>
-        ))}
-      </select>
-    </div>
-
-    <div>
-      <label className="mb-1 block text-[11px] text-[#8fa0b7]">Total</label>
-      <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
-        {tp1Contracts + runnerContracts}
-      </div>
-    </div>
-  </div>
-</div>
-     
-
-<div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Level</label>
-  <select
-  value={tp1Level}
-  onChange={(e) => {
-    const value = e.target.value;
-    setTp1Level(value === "OTHER" || value === "BE" ? value : Number(value));
-  }}
-  className={inputClass}
->
-  <option value="BE">BE</option>
-  <option value={50}>+50 ticks</option>
-    <option value={100}>+100 ticks</option>
-<option value={120}>+120 ticks</option>
-<option value={155}>+155 ticks</option>
-<option value={175}>+175 ticks</option>
-<option value="OTHER">Other</option>
-  </select>
-  {tp1Level === "OTHER" ? (
-  <div>
-    <label className="mb-1 block text-[13px] text-[#c4d0df]">
-      Custom TP1 Level
-    </label>
-    <input
-      type="number"
-      value={tp1CustomLevel}
-      onChange={(e) => setTp1CustomLevel(e.target.value)}
-      placeholder="ej. 130"
-      className={inputClass}
-    />
-  </div>
-) : null}
-</div>
-
-<div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Level</label>
-  <select
-  value={runnerLevel}
-  onChange={(e) => {
-    const value = e.target.value;
-    setRunnerLevel(value === "OTHER" ? value : Number(value));
-  }}
-  className={inputClass}
-  disabled={disableRunner}
->
-    <option value={0}>0</option>
-    <option value={50}>50 ticks</option>
-<option value={90}>90 ticks</option>
-<option value={120}>120 ticks</option>
-<option value={155}>155 ticks</option>
-<option value={175}>175 ticks</option>
-<option value={200}>200 ticks</option>
-<option value="OTHER">Other</option>
-  </select>
-  {runnerLevel === "OTHER" && !disableRunner ? (
-  <div>
-    <label className="mb-1 block text-[13px] text-[#c4d0df]">
-      Custom Runner Level
-    </label>
-    <input
-      type="number"
-      value={runnerCustomLevel}
-      onChange={(e) => setRunnerCustomLevel(e.target.value)}
-      placeholder="ej. 240"
-      className={inputClass}
-    />
-  </div>
-) : null}
-</div>
 
           <div>
-  
-</div>
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">
+              Contracts
+            </label>
 
-<div>
-  
-</div>
+            <div className="grid grid-cols-3 gap-2 items-end">
+              <div>
+                <label className="mb-1 block text-[11px] text-[#8fa0b7]">
+                  TP1
+                </label>
+                {noTradeDay ? (
+                  <div className={noTradeDisplayClass}>-</div>
+                ) : (
+                  <select
+                    value={tp1Contracts}
+                    onChange={(e) => setTp1Contracts(Number(e.target.value))}
+                    className={inputClass}
+                  >
+                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
 
-<div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">
-    SL Level
-  </label>
+              <div>
+                <label className="mb-1 block text-[11px] text-[#8fa0b7]">
+                  Runner
+                </label>
+                {noTradeDay ? (
+                  <div className={noTradeDisplayClass}>-</div>
+                ) : (
+                  <select
+                    value={runnerContracts}
+                    onChange={(e) =>
+                      setRunnerContracts(Number(e.target.value))
+                    }
+                    className={inputClass}
+                  >
+                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
 
-  {disableSL ? (
-    <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
-      {autoSL ?? "-"}
-    </div>
-  ) : (
-    <select
-      value={slLevel}
-      onChange={(e) => {
-        const value = e.target.value;
-        setSlLevel(value === "MANUAL" ? value : Number(value));
-      }}
-      className={inputClass}
-    >
-      <option value={-150}>-150 ticks</option>
-      <option value={-100}>-100 ticks</option>
-      <option value={-50}>-50 ticks</option>
-      <option value="MANUAL">Manual</option>
-    </select>
-  )}
-</div>
-
-{slLevel === "MANUAL" && !disableSL ? (
-  <div>
-    <label className="mb-1 block text-[13px] text-[#c4d0df]">
-      Custom SL Level
-    </label>
-    <input
-      type="number"
-      value={slCustomLevel}
-      onChange={(e) => setSlCustomLevel(e.target.value)}
-      placeholder="ej. -200"
-      className={inputClass}
-    />
-  </div>
-) : null}
+              <div>
+                <label className="mb-1 block text-[11px] text-[#8fa0b7]">
+                  Total
+                </label>
+                <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
+                  {noTradeDay ? "-" : tp1Contracts + runnerContracts}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div>
-            <label className="mb-1 block text-[13px] text-[#c4d0df]">Notas</label>
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">
+              TP1 Level
+            </label>
+            {noTradeDay ? (
+              <div className={noTradeDisplayClass}>-</div>
+            ) : (
+              <select
+                value={tp1Level}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTp1Level(
+                    value === "OTHER" || value === "BE"
+                      ? value
+                      : Number(value)
+                  );
+                }}
+                className={inputClass}
+              >
+                <option value="BE">BE</option>
+                <option value={50}>+50 ticks</option>
+                <option value={100}>+100 ticks</option>
+                <option value={120}>+120 ticks</option>
+                <option value={155}>+155 ticks</option>
+                <option value={175}>+175 ticks</option>
+                <option value="OTHER">Other</option>
+              </select>
+            )}
+
+            {tp1Level === "OTHER" && !noTradeDay ? (
+              <div>
+                <label className="mb-1 block text-[13px] text-[#c4d0df]">
+                  Custom TP1 Level
+                </label>
+                <input
+                  type="number"
+                  value={tp1CustomLevel}
+                  onChange={(e) => setTp1CustomLevel(e.target.value)}
+                  placeholder="ej. 130"
+                  className={inputClass}
+                />
+              </div>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">
+              Runner Level
+            </label>
+            {noTradeDay ? (
+              <div className={noTradeDisplayClass}>-</div>
+            ) : (
+              <select
+                value={runnerLevel}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setRunnerLevel(value === "OTHER" ? value : Number(value));
+                }}
+                className={inputClass}
+                disabled={disableRunner}
+              >
+                <option value={0}>0</option>
+                <option value={50}>50 ticks</option>
+                <option value={90}>90 ticks</option>
+                <option value={120}>120 ticks</option>
+                <option value={155}>155 ticks</option>
+                <option value={175}>175 ticks</option>
+                <option value={200}>200 ticks</option>
+                <option value="OTHER">Other</option>
+              </select>
+            )}
+
+            {runnerLevel === "OTHER" && !disableRunner && !noTradeDay ? (
+              <div>
+                <label className="mb-1 block text-[13px] text-[#c4d0df]">
+                  Custom Runner Level
+                </label>
+                <input
+                  type="number"
+                  value={runnerCustomLevel}
+                  onChange={(e) => setRunnerCustomLevel(e.target.value)}
+                  placeholder="ej. 240"
+                  className={inputClass}
+                />
+              </div>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">
+              SL Level
+            </label>
+
+            {noTradeDay ? (
+              <div className={noTradeDisplayClass}>-</div>
+            ) : disableSL ? (
+              <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
+                {autoSL ?? "-"}
+              </div>
+            ) : (
+              <select
+                value={slLevel}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSlLevel(value === "MANUAL" ? value : Number(value));
+                }}
+                className={inputClass}
+              >
+                <option value={-150}>-150 ticks</option>
+                <option value={-100}>-100 ticks</option>
+                <option value={-50}>-50 ticks</option>
+                <option value="MANUAL">Manual</option>
+              </select>
+            )}
+          </div>
+
+          {slLevel === "MANUAL" && !disableSL && !noTradeDay ? (
+            <div>
+              <label className="mb-1 block text-[13px] text-[#c4d0df]">
+                Custom SL Level
+              </label>
+              <input
+                type="number"
+                value={slCustomLevel}
+                onChange={(e) => setSlCustomLevel(e.target.value)}
+                placeholder="ej. -200"
+                className={inputClass}
+              />
+            </div>
+          ) : null}
+
+          <div>
+            <label className="mb-1 block text-[13px] text-[#c4d0df]">
+              Notas
+            </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              disabled={noTradeDay}
               placeholder="Observaciones..."
-              className="min-h-[96px] w-full rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-3 text-[14px] text-white outline-none placeholder:text-[#6f8198]"
+              className="min-h-[96px] w-full rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-3 text-[14px] text-white outline-none placeholder:text-[#6f8198] disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -1068,7 +1238,11 @@ runnerCustomLevel: runnerLevel === "OTHER"
               disabled={saving}
               className="w-full rounded-[14px] bg-[#2563eb] px-4 py-3 text-[14px] font-medium text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)] disabled:opacity-60"
             >
-              {saving ? "Guardando..." : editingTrade ? "Guardar cambios" : "Guardar entrada"}
+              {saving
+                ? "Guardando..."
+                : editingTrade
+                ? "Guardar cambios"
+                : "Guardar entrada"}
             </button>
 
             {editingTrade ? (
@@ -1129,7 +1303,16 @@ runnerCustomLevel: runnerLevel === "OTHER"
 
 // ─── FilterBar ────────────────────────────────────────────────────────────────
 
-function FilterBar({ range, setRange, symbol, setSymbol, customFrom, setCustomFrom, customTo, setCustomTo }) {
+function FilterBar({
+  range,
+  setRange,
+  symbol,
+  setSymbol,
+  customFrom,
+  setCustomFrom,
+  customTo,
+  setCustomTo,
+}) {
   const selectClass =
     "rounded-xl border border-[#243041] bg-[#111827] px-3 py-2 text-[12px] text-white outline-none";
   const inputClass =
@@ -1169,7 +1352,9 @@ function FilterBar({ range, setRange, symbol, setSymbol, customFrom, setCustomFr
       {range === "CUSTOM" ? (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div>
-            <label className="mb-1 block text-[11px] text-[#8fa0b7]">From</label>
+            <label className="mb-1 block text-[11px] text-[#8fa0b7]">
+              From
+            </label>
             <input
               type="date"
               value={customFrom}
@@ -1178,7 +1363,9 @@ function FilterBar({ range, setRange, symbol, setSymbol, customFrom, setCustomFr
             />
           </div>
           <div>
-            <label className="mb-1 block text-[11px] text-[#8fa0b7]">To</label>
+            <label className="mb-1 block text-[11px] text-[#8fa0b7]">
+              To
+            </label>
             <input
               type="date"
               value={customTo}
@@ -1203,7 +1390,9 @@ function BottomNav({ active, onChange, isAdmin }) {
 
   return (
     <div
-      className={`mt-auto grid ${isAdmin ? "grid-cols-3" : "grid-cols-2"} gap-0 rounded-[22px] border border-[#243041] bg-[#0f172a] p-1`}
+      className={`mt-auto grid ${
+        isAdmin ? "grid-cols-3" : "grid-cols-2"
+      } gap-0 rounded-[22px] border border-[#243041] bg-[#0f172a] p-1`}
     >
       {items.map((item) => {
         const Icon = item.icon;
@@ -1218,7 +1407,11 @@ function BottomNav({ active, onChange, isAdmin }) {
                 : "text-[#8fa0b7]"
             }`}
           >
-            <Icon className={`mb-1 h-4 w-4 ${selected ? "text-[#60a5fa]" : "text-[#8fa0b7]"}`} />
+            <Icon
+              className={`mb-1 h-4 w-4 ${
+                selected ? "text-[#60a5fa]" : "text-[#8fa0b7]"
+              }`}
+            />
             {item.label}
           </button>
         );
@@ -1272,9 +1465,14 @@ export default function App() {
     let mounted = true;
 
     const loadSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
       if (error) console.error("Auth session error:", error);
       if (!mounted) return;
+
       const email = session?.user?.email || "";
       setIsAdmin(email === ADMIN_EMAIL);
       setAuthLoading(false);
@@ -1282,7 +1480,9 @@ export default function App() {
 
     loadSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       const email = session?.user?.email || "";
       setIsAdmin(email === ADMIN_EMAIL);
       setAuthLoading(false);
@@ -1299,43 +1499,54 @@ export default function App() {
       alert("Enter email and password.");
       return;
     }
+
     setAuthLoading(true);
+
     const { error } = await supabase.auth.signInWithPassword({
       email: authEmail,
       password: authPassword,
     });
+
     setAuthLoading(false);
+
     if (error) {
       console.error("Login error:", error);
       alert(error.message);
       return;
     }
+
     setShowLoginForm(false);
     setAuthPassword("");
   };
 
   const handleAdminLogout = async () => {
     const { error } = await supabase.auth.signOut();
+
     if (error) {
       console.error("Logout error:", error);
       alert(error.message);
       return;
     }
+
     setIsAdmin(false);
     setEditingTrade(null);
     setAuthPassword("");
+
     if (activeTab === "new") setActiveTab("overview");
   };
 
   const handleDeleteTrade = async (id) => {
     const confirmed = window.confirm(`Delete this trade? ID: ${id}`);
     if (!confirmed) return;
+
     const { error } = await supabase.from("trades").delete().eq("id", id);
+
     if (error) {
       console.error("Delete error:", error);
       alert(`Delete failed: ${error.message}`);
       return;
     }
+
     await fetchTrades();
   };
 
@@ -1350,18 +1561,18 @@ export default function App() {
           symbol: trade.symbol,
           direction: trade.direction,
           contracts: trade.contracts,
-tp1Level: trade.tp1Level,
-runnerLevel: trade.runnerLevel,
-runnerCustomLevel: trade.runnerCustomLevel,
+          tp1Level: trade.tp1Level,
+          runnerLevel: trade.runnerLevel,
+          runnerCustomLevel: trade.runnerCustomLevel,
           tp1hit: trade.tp1hit,
           runnerhit: trade.runnerhit,
           tp1pnl: trade.tp1pnl,
           runnerpnl: trade.runnerpnl,
           pnl: trade.pnl,
           notes: trade.notes,
-
         })
         .eq("id", trade.id);
+
       error = result.error;
     } else {
       const result = await supabase.from("trades").insert([
@@ -1370,9 +1581,9 @@ runnerCustomLevel: trade.runnerCustomLevel,
           symbol: trade.symbol,
           direction: trade.direction,
           contracts: trade.contracts,
-tp1Level: trade.tp1Level,
-runnerLevel: trade.runnerLevel,
-runnerCustomLevel: trade.runnerCustomLevel,
+          tp1Level: trade.tp1Level,
+          runnerLevel: trade.runnerLevel,
+          runnerCustomLevel: trade.runnerCustomLevel,
           tp1hit: trade.tp1hit,
           runnerhit: trade.runnerhit,
           tp1pnl: trade.tp1pnl,
@@ -1381,6 +1592,7 @@ runnerCustomLevel: trade.runnerCustomLevel,
           notes: trade.notes,
         },
       ]);
+
       error = result.error;
     }
 
@@ -1397,11 +1609,13 @@ runnerCustomLevel: trade.runnerCustomLevel,
 
   const handleImportTrades = async (importedTrades) => {
     const { error } = await supabase.from("trades").insert(importedTrades);
+
     if (error) {
       console.error("Bulk insert error:", error);
       alert(error.message);
       return;
     }
+
     await fetchTrades();
     setEditingTrade(null);
     setActiveTab("records");
@@ -1456,29 +1670,40 @@ runnerCustomLevel: trade.runnerCustomLevel,
           </div>
         );
       }
+
       return (
         <NewTradeScreen
-  onSave={handleSaveTrade}
-  onImport={handleImportTrades}
-  editingTrade={editingTrade}
-  noTradeDay={noTradeDay}
-  setNoTradeDay={setNoTradeDay}
-  onCancelEdit={() => {
-    setEditingTrade(null);
-    setNoTradeDay(false);
-    setActiveTab("records");
-  }}
-/>
+          onSave={handleSaveTrade}
+          onImport={handleImportTrades}
+          editingTrade={editingTrade}
+          noTradeDay={noTradeDay}
+          setNoTradeDay={setNoTradeDay}
+          onCancelEdit={() => {
+            setEditingTrade(null);
+            setNoTradeDay(false);
+            setActiveTab("records");
+          }}
+        />
       );
     }
 
     return null;
-  }, [loading, activeTab, filteredTrades, range, symbol, customFrom, customTo, editingTrade, isAdmin, noTradeDay]);
+  }, [
+    loading,
+    activeTab,
+    filteredTrades,
+    range,
+    symbol,
+    customFrom,
+    customTo,
+    editingTrade,
+    isAdmin,
+    noTradeDay,
+  ]);
 
   return (
     <div className="min-h-screen bg-[#020817] p-4 text-white">
       <div className="mx-auto max-w-[360px] rounded-[34px] border border-[#243041] bg-[#0b1220] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-
         <div className="mb-3">
           <div className="flex items-center justify-between text-[11px] text-[#8fa0b7]">
             {!isAdmin ? (
@@ -1493,12 +1718,15 @@ runnerCustomLevel: trade.runnerCustomLevel,
                 Logout
               </button>
             )}
+
             <span>{isAdmin ? "Admin mode" : "Viewer mode"}</span>
           </div>
 
           {!isAdmin && showLoginForm ? (
             <div className="mt-3 rounded-[16px] border border-[#243041] bg-[#111827] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
-              <div className="mb-2 text-[12px] text-[#c4d0df]">Admin access</div>
+              <div className="mb-2 text-[12px] text-[#c4d0df]">
+                Admin access
+              </div>
               <div className="space-y-2">
                 <input
                   type="email"
@@ -1527,27 +1755,29 @@ runnerCustomLevel: trade.runnerCustomLevel,
         </div>
 
         <div className="mb-4 flex items-center justify-between pt-1">
-  <div className="text-[12px] font-medium text-[#dbe5f3]">9:41</div>
-  <div className="text-center text-[11px] text-[#8fa0b7]">JoTa_Metrics</div>
-  <div className="flex items-center gap-1">
-    <MoreHorizontal className="h-5 w-5 text-[#dbe5f3]" />
-  </div>
-</div>
+          <div className="text-[12px] font-medium text-[#dbe5f3]">9:41</div>
+          <div className="text-center text-[11px] text-[#8fa0b7]">
+            JoTa_Metrics
+          </div>
+          <div className="flex items-center gap-1">
+            <MoreHorizontal className="h-5 w-5 text-[#dbe5f3]" />
+          </div>
+        </div>
 
         <FilterBar
-  range={range}
-  setRange={setRange}
-  symbol={symbol}
-  setSymbol={setSymbol}
-  customFrom={customFrom}
-  setCustomFrom={setCustomFrom}
-  customTo={customTo}
-  setCustomTo={setCustomTo}
-/>
+          range={range}
+          setRange={setRange}
+          symbol={symbol}
+          setSymbol={setSymbol}
+          customFrom={customFrom}
+          setCustomFrom={setCustomFrom}
+          customTo={customTo}
+          setCustomTo={setCustomTo}
+        />
 
-<BottomNav active={activeTab} onChange={setActiveTab} isAdmin={isAdmin} />
+        <BottomNav active={activeTab} onChange={setActiveTab} isAdmin={isAdmin} />
 
-<div className="mt-4 min-h-[560px] pb-4">{content}</div>
+        <div className="mt-4 min-h-[560px] pb-4">{content}</div>
       </div>
     </div>
   );
