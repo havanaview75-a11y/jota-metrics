@@ -813,6 +813,15 @@ function NewTradeScreen({
   const handleSubmit = async () => {
     const tickValue = 0.5;
 
+    const dateAlreadyExists = trades.some(
+  (trade) => trade.date === date && trade.id !== editingTrade?.id
+);
+
+if (dateAlreadyExists) {
+  alert("This date already has an entry. Only one entry per day is allowed.");
+  return;
+}
+
     if (noTradeDay) {
       setSaving(true);
 
