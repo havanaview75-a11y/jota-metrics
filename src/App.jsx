@@ -630,13 +630,11 @@ const effectiveTp1Ticks =
 const disableRunner = effectiveTp1Ticks <= 0;
 
 const autoSL =
-  effectiveTp1Ticks < 50
-    ? -150
-    : effectiveTp1Ticks === 50
+  effectiveTp1Ticks >= 0
     ? 0
-    : null;
+    : -150;
 
-const disableSL = effectiveTp1Ticks <= 50;
+const disableSL = true;
 
 useEffect(() => {
   if (effectiveTp1Ticks < 0) {
