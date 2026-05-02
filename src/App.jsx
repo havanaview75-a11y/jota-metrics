@@ -577,7 +577,7 @@ const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerC
 const [tp1Result, setTp1Result] = useState(editingTrade?.tp1Result || "HIT");
 const [runnerResult, setRunnerResult] = useState(editingTrade?.runnerResult || "HIT");
 const [tp1Contracts, setTp1Contracts] = useState(editingTrade?.tp1Contracts || 1);
-const [runnerContracts, setRunnerContracts] = useState(editingTrade?.runnerContracts || 8);
+const [runnerContracts, setRunnerContracts] = useState(editingTrade?.runnerContracts || 3);
 const [slLevel, setSlLevel] = useState(editingTrade?.slLevel || -150);
 const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel || "");
   const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
@@ -619,7 +619,7 @@ setRunnerCustomLevel("");
 setTp1Result("HIT");
 setRunnerResult("HIT");
 setTp1Contracts(1);
-setRunnerContracts(8);
+setRunnerContracts(4);
 setSlLevel(-150);
 setSlCustomLevel("");
     }
@@ -691,9 +691,17 @@ runnerCustomLevel: runnerLevel === "OTHER"
 
   return (
     <div className="space-y-4">
-      <div className="text-[24px] tracking-tight text-white">
-        {editingTrade ? "Editar entrada" : "Nueva entrada"}
-      </div>
+      <div className="flex items-center justify-between gap-3">
+  <div className="text-[24px] tracking-tight text-white">
+    {editingTrade ? "Editar entrada" : "Nueva entrada"}
+  </div>
+
+  <input
+    value={symbol}
+    onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+    className="w-[88px] rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-2 text-center text-[13px] text-white outline-none"
+  />
+</div>
 
       <div className="flex gap-2">
         <button
@@ -726,15 +734,6 @@ runnerCustomLevel: runnerLevel === "OTHER"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               type="date"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-[13px] text-[#c4d0df]">Símbolo</label>
-            <input
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value.toUpperCase())}
               className={inputClass}
             />
           </div>
