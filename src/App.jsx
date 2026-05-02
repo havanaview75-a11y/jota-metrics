@@ -769,18 +769,9 @@ runnerCustomLevel: runnerLevel === "OTHER"
 
   <div className="grid grid-cols-3 gap-2">
     <div>
-      <label className="mb-1 block text-[11px] text-[#8fa0b7]">Total</label>
-      <select
-        value={contracts}
-        onChange={(e) => setContracts(Number(e.target.value))}
-        className={inputClass}
-      >
-        {[2,3,4,5,6,7,8,9].map((n) => (
-          <option key={n} value={n}>{n}</option>
-        ))}
-      </select>
-    </div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">Contracts</label>
 
+  <div className="grid grid-cols-3 gap-2 items-end">
     <div>
       <label className="mb-1 block text-[11px] text-[#8fa0b7]">TP1</label>
       <select
@@ -806,8 +797,16 @@ runnerCustomLevel: runnerLevel === "OTHER"
         ))}
       </select>
     </div>
+
+    <div>
+      <label className="mb-1 block text-[11px] text-[#8fa0b7]">Total</label>
+      <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
+        {tp1Contracts + runnerContracts}
+      </div>
+    </div>
   </div>
 </div>
+     
 
 <div>
   <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Level</label>
