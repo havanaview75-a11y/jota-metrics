@@ -460,12 +460,12 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
       </div>
 
       <div
-        className={`text-[22px] font-semibold ${
-          positive ? "text-[#22c55e]" : "text-[#f87171]"
-        }`}
-      >
-        {formatCurrency(trade.pnl)}
-      </div>
+  className={`text-[26px] font-bold tracking-tight ${
+    positive ? "text-[#22c55e]" : "text-[#f87171]"
+  }`}
+>
+  {formatCurrency(trade.pnl)}
+</div>
     </div>
 
     <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
