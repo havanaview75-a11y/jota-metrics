@@ -806,12 +806,19 @@ runnerCustomLevel: runnerLevel === "OTHER"
 <div>
   <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Level</label>
   <select
-    value={tp1Level}
-    onChange={(e) => setTp1Level(Number(e.target.value))}
-    className={inputClass}
-  >
+  value={tp1Level}
+  onChange={(e) => {
+    const value = e.target.value;
+    setTp1Level(value === "OTHER" || value === "BE" ? value : Number(value));
+  }}
+  className={inputClass}
+>
     <option value={100}>100 ticks</option>
-    <option value={120}>120 ticks</option>
+<option value={120}>120 ticks</option>
+<option value={155}>155 ticks</option>
+<option value="BE">BE</option>
+<option value={50}>+50 ticks</option>
+<option value="OTHER">Other</option>
   </select>
 </div>
 
