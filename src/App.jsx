@@ -454,13 +454,12 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
           <span>{formatDateShort(trade.date)}</span>
         </div>
 
-        <div className="mt-1 text-[12px] text-[#8fa0b7]">
-          {trade.symbol} · {trade.direction} · {trade.contracts || 1} contracts
-        </div>
-        <div className="text-[11px] text-[#6b7a90]">
+       <div className="text-[11px] text-[#6b7a90]">
   Total:{" "}
-  {(trade.tp1Level || 100) +
-    (trade.runnerCustomLevel || trade.runnerLevel || 90)}{" "}
+  {Math.max(
+    trade.tp1Level || 100,
+    trade.runnerCustomLevel || trade.runnerLevel || 90
+  )}{" "}
   ticks
 </div>
       </div>
