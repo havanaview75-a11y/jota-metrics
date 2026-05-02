@@ -928,6 +928,7 @@ runnerCustomLevel: runnerLevel === "OTHER"
   className={inputClass}
   disabled={disableRunner}
 >
+    <option value={0}>0</option>
     <option value={50}>50 ticks</option>
 <option value={90}>90 ticks</option>
 <option value={120}>120 ticks</option>
