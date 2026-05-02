@@ -1294,19 +1294,19 @@ runnerCustomLevel: trade.runnerCustomLevel,
         </div>
 
         <FilterBar
-          range={range}
-          setRange={setRange}
-          symbol={symbol}
-          setSymbol={setSymbol}
-          customFrom={customFrom}
-          setCustomFrom={setCustomFrom}
-          customTo={customTo}
-          setCustomTo={setCustomTo}
-        />
+  range={range}
+  setRange={setRange}
+  symbol={symbol}
+  setSymbol={setSymbol}
+  customFrom={customFrom}
+  setCustomFrom={setCustomFrom}
+  customTo={customTo}
+  setCustomTo={setCustomTo}
+/>
 
-        <div className="min-h-[560px] pb-4">{content}</div>
+<BottomNav active={activeTab} onChange={setActiveTab} isAdmin={isAdmin} />
 
-        <BottomNav active={activeTab} onChange={setActiveTab} isAdmin={isAdmin} />
+<div className="mt-4 min-h-[560px] pb-4">{content}</div>
       </div>
     </div>
   );
