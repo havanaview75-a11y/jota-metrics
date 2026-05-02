@@ -581,6 +581,7 @@ const [runnerContracts, setRunnerContracts] = useState(editingTrade?.runnerContr
 const [slLevel, setSlLevel] = useState(editingTrade?.slLevel || -150);
 const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel || "");
   const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
+  const [tp1CustomLevel, setTp1CustomLevel] = useState("");
   const [notes, setNotes] = useState(editingTrade?.notes || "");
   const [csvText, setCsvText] = useState(
     "date,symbol,direction,pnl,notes\n2026-04-12,MYM,LONG,120,Imported sample"
@@ -813,13 +814,28 @@ runnerCustomLevel: runnerLevel === "OTHER"
   }}
   className={inputClass}
 >
-    <option value={100}>100 ticks</option>
-<option value={120}>120 ticks</option>
-<option value={155}>155 ticks</option>
-<option value="BE">BE</option>
-<option value={50}>+50 ticks</option>
+  <option value="BE">BE</option>
+  <option value={50}>+50 ticks</option>
+    <option value={100}>+100 ticks</option>
+<option value={120}>+120 ticks</option>
+<option value={155}>+155 ticks</option>
+<option value={175}>+175 ticks</option>
 <option value="OTHER">Other</option>
   </select>
+  {tp1Level === "OTHER" ? (
+  <div>
+    <label className="mb-1 block text-[13px] text-[#c4d0df]">
+      Custom TP1 Level
+    </label>
+    <input
+      type="number"
+      value={tp1CustomLevel}
+      onChange={(e) => setTp1CustomLevel(e.target.value)}
+      placeholder="ej. 130"
+      className={inputClass}
+    />
+  </div>
+) : null}
 </div>
 
 <div>
