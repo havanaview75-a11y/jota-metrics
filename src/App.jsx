@@ -1514,26 +1514,7 @@ runnerCustomLevel: trade.runnerCustomLevel,
 
         <div className="mb-4 flex items-center justify-between pt-1">
   <div className="text-[12px] font-medium text-[#dbe5f3]">9:41</div>
-
-  <div className="flex flex-col items-center gap-1">
-    <div className="text-center text-[11px] text-[#8fa0b7]">JoTa_Metrics</div>
-
-    {isAdmin ? (
-      <label className="flex items-center gap-1 text-[10px] text-[#c4d0df]">
-        <input
-          type="checkbox"
-          checked={noTradeDay}
-          onChange={(e) => {
-            setNoTradeDay(e.target.checked);
-            if (e.target.checked) setActiveTab("new");
-          }}
-          className="h-3 w-3 accent-[#2563eb]"
-        />
-        No trade day
-      </label>
-    ) : null}
-  </div>
-
+  <div className="text-center text-[11px] text-[#8fa0b7]">JoTa_Metrics</div>
   <div className="flex items-center gap-1">
     <MoreHorizontal className="h-5 w-5 text-[#dbe5f3]" />
   </div>
