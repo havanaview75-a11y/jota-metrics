@@ -542,7 +542,7 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
 
       {isNoTradeDay ? (
         <div className="mt-4 rounded-[16px] border border-[#5f4718] bg-[#352914] p-3 text-center text-[13px] font-medium text-[#fcd34d]">
-          No Trade Day
+          No Trade Day, The Metrics will be not Affected
         </div>
       ) : (
         <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
