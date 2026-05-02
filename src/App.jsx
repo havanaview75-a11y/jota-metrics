@@ -594,8 +594,10 @@ const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel |
   useEffect(() => {
   if (noTradeDay) {
     setNotes("No trade today");
-  } else if (notes === "No trade today") {
-    setNotes("");
+  } else {
+    setNotes((currentNotes) =>
+      currentNotes === "No trade today" ? "" : currentNotes
+    );
   }
 }, [noTradeDay]);
 
@@ -1471,7 +1473,7 @@ runnerCustomLevel: trade.runnerCustomLevel,
     }
 
     return null;
-  }, [loading, activeTab, filteredTrades, range, symbol, customFrom, customTo, editingTrade, isAdmin]);
+  }, [loading, activeTab, filteredTrades, range, symbol, customFrom, customTo, editingTrade, isAdmin, noTradeDay]);
 
   return (
     <div className="min-h-screen bg-[#020817] p-4 text-white">
