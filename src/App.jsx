@@ -206,6 +206,9 @@ function getRangeLabel(trades, range, customFrom, customTo) {
 }
 
 function getOverviewMetrics(trades) {
+    trades = trades.filter(
+    (t) => String(t.notes || "").toLowerCase() !== "no trade today"
+  );
   const totalPnL = trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
   const totalTP1 = trades.reduce((sum, t) => sum + Number(t.tp1pnl || 0), 0);
   const totalRunner = trades.reduce((sum, t) => sum + Number(t.runnerpnl || 0), 0);
@@ -251,6 +254,7 @@ function getOverviewMetrics(trades) {
 
 function getChartBars(trades) {
   return [...trades]
+    .filter((t) => String(t.notes || "").toLowerCase() !== "no trade today")
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-5)
     .map((trade) => ({
@@ -563,7 +567,7 @@ function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
   );
 }
 
-function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
+function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit, noTradeDay, setNoTradeDay }) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const [mode, setMode] = useState("manual");
@@ -586,6 +590,14 @@ const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel |
   );
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+  if (noTradeDay) {
+    setNotes("No trade today");
+  } else if (notes === "No trade today") {
+    setNotes("");
+  }
+}, [noTradeDay]);
 
   useEffect(() => {
     if (editingTrade) {
@@ -653,6 +665,30 @@ useEffect(() => {
 
   const handleSubmit = async () => {
     const tickValue = 0.5;
+    if (noTradeDay) {
+  setSaving(true);
+
+  await onSave({
+    id: editingTrade?.id,
+    date,
+    symbol: String(symbol || "MYM").toUpperCase(),
+    direction: "NONE",
+    contracts: 0,
+    tp1Level: 0,
+    runnerLevel: 0,
+    runnerCustomLevel: null,
+    tp1hit: false,
+    runnerhit: false,
+    tp1pnl: 0,
+    runnerpnl: 0,
+    pnl: 0,
+    notes: "No trade today",
+  });
+
+  setSaving(false);
+  setNoTradeDay(false);
+  return;
+}
 
 const totalContracts = tp1Contracts + runnerContracts;
 
@@ -1190,6 +1226,7 @@ export default function App() {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [editingTrade, setEditingTrade] = useState(null);
+  const [noTradeDay, setNoTradeDay] = useState(false);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
@@ -1407,14 +1444,17 @@ runnerCustomLevel: trade.runnerCustomLevel,
       }
       return (
         <NewTradeScreen
-          onSave={handleSaveTrade}
-          onImport={handleImportTrades}
-          editingTrade={editingTrade}
-          onCancelEdit={() => {
-            setEditingTrade(null);
-            setActiveTab("records");
-          }}
-        />
+  onSave={handleSaveTrade}
+  onImport={handleImportTrades}
+  editingTrade={editingTrade}
+  noTradeDay={noTradeDay}
+  setNoTradeDay={setNoTradeDay}
+  onCancelEdit={() => {
+    setEditingTrade(null);
+    setNoTradeDay(false);
+    setActiveTab("records");
+  }}
+/>
       );
     }
 
@@ -1473,12 +1513,31 @@ runnerCustomLevel: trade.runnerCustomLevel,
         </div>
 
         <div className="mb-4 flex items-center justify-between pt-1">
-          <div className="text-[12px] font-medium text-[#dbe5f3]">9:41</div>
-          <div className="text-center text-[11px] text-[#8fa0b7]">JoTa_Metrics</div>
-          <div className="flex items-center gap-1">
-            <MoreHorizontal className="h-5 w-5 text-[#dbe5f3]" />
-          </div>
-        </div>
+  <div className="text-[12px] font-medium text-[#dbe5f3]">9:41</div>
+
+  <div className="flex flex-col items-center gap-1">
+    <div className="text-center text-[11px] text-[#8fa0b7]">JoTa_Metrics</div>
+
+    {isAdmin ? (
+      <label className="flex items-center gap-1 text-[10px] text-[#c4d0df]">
+        <input
+          type="checkbox"
+          checked={noTradeDay}
+          onChange={(e) => {
+            setNoTradeDay(e.target.checked);
+            if (e.target.checked) setActiveTab("new");
+          }}
+          className="h-3 w-3 accent-[#2563eb]"
+        />
+        No trade day
+      </label>
+    ) : null}
+  </div>
+
+  <div className="flex items-center gap-1">
+    <MoreHorizontal className="h-5 w-5 text-[#dbe5f3]" />
+  </div>
+</div>
 
         <FilterBar
   range={range}
