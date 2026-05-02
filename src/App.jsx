@@ -574,6 +574,12 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
 const [tp1Level, setTp1Level] = useState(editingTrade?.tp1Level || 100);
 const [runnerLevel, setRunnerLevel] = useState(editingTrade?.runnerLevel || 90);
 const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerCustomLevel || "");
+const [tp1Result, setTp1Result] = useState(editingTrade?.tp1Result || "HIT");
+const [runnerResult, setRunnerResult] = useState(editingTrade?.runnerResult || "HIT");
+const [tp1Contracts, setTp1Contracts] = useState(editingTrade?.tp1Contracts || 1);
+const [runnerContracts, setRunnerContracts] = useState(editingTrade?.runnerContracts || 8);
+const [slLevel, setSlLevel] = useState(editingTrade?.slLevel || -150);
+const [slCustomLevel, setSlCustomLevel] = useState(editingTrade?.slCustomLevel || "");
   const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
   const [notes, setNotes] = useState(editingTrade?.notes || "");
   const [csvText, setCsvText] = useState(
@@ -592,6 +598,12 @@ const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerC
 setTp1Level(editingTrade.tp1Level || 100);
 setRunnerLevel(editingTrade.runnerLevel || 90);
 setRunnerCustomLevel(editingTrade.runnerCustomLevel || "");
+setTp1Result(editingTrade.tp1Result || "HIT");
+setRunnerResult(editingTrade.runnerResult || "HIT");
+setTp1Contracts(editingTrade.tp1Contracts || 1);
+setRunnerContracts(editingTrade.runnerContracts || 8);
+setSlLevel(editingTrade.slLevel || -150);
+setSlCustomLevel(editingTrade.slCustomLevel || "");
       setPnlInput(String(editingTrade.pnl ?? ""));
       setNotes(editingTrade.notes || "");
     } else {
@@ -604,6 +616,12 @@ setRunnerCustomLevel(editingTrade.runnerCustomLevel || "");
 setTp1Level(100);
 setRunnerLevel(90);
 setRunnerCustomLevel("");
+setTp1Result("HIT");
+setRunnerResult("HIT");
+setTp1Contracts(1);
+setRunnerContracts(8);
+setSlLevel(-150);
+setSlCustomLevel("");
     }
   }, [editingTrade, today]);
 
@@ -806,14 +824,89 @@ runnerCustomLevel: runnerLevel === "OTHER"
 </div>
 
           <div>
-            <label className="mb-1 block text-[13px] text-[#c4d0df]">P&amp;L ($)</label>
-            <input
-              value={pnlInput}
-              onChange={(e) => setPnlInput(e.target.value)}
-              placeholder="ej. 350 o -150"
-              className={inputClass}
-            />
-          </div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Result</label>
+  <select
+    value={tp1Result}
+    onChange={(e) => setTp1Result(e.target.value)}
+    className={inputClass}
+  >
+    <option value="HIT">HIT</option>
+    <option value="SL">SL</option>
+  </select>
+</div>
+
+<div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Contracts</label>
+  <select
+    value={tp1Contracts}
+    onChange={(e) => setTp1Contracts(Number(e.target.value))}
+    className={inputClass}
+  >
+    {[1,2,3,4,5,6,7,8,9].map((n) => (
+      <option key={n} value={n}>{n}</option>
+    ))}
+  </select>
+</div>
+
+<div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Result</label>
+  <select
+    value={runnerResult}
+    onChange={(e) => setRunnerResult(e.target.value)}
+    className={inputClass}
+    disabled={tp1Result === "SL"}
+  >
+    <option value="HIT">HIT</option>
+    <option value="SL">SL</option>
+    <option value="BE">BE</option>
+  </select>
+</div>
+
+<div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Contracts</label>
+  <select
+    value={runnerContracts}
+    onChange={(e) => setRunnerContracts(Number(e.target.value))}
+    className={inputClass}
+    disabled={tp1Result === "SL"}
+  >
+    {[0,1,2,3,4,5,6,7,8,9].map((n) => (
+      <option key={n} value={n}>{n}</option>
+    ))}
+  </select>
+</div>
+
+<div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">SL Level</label>
+  <select
+    value={slLevel}
+    onChange={(e) => {
+      const value = e.target.value;
+      setSlLevel(value === "MANUAL" ? value : Number(value));
+    }}
+    className={inputClass}
+  >
+    <option value={-150}>-150 ticks</option>
+    <option value={-100}>-100 ticks</option>
+    <option value={-50}>-50 ticks</option>
+    <option value="MANUAL">Manual</option>
+  </select>
+</div>
+
+{slLevel === "MANUAL" ? (
+  <div>
+    <label className="mb-1 block text-[13px] text-[#c4d0df]">
+      Custom SL Level
+    </label>
+    <input
+      type="number"
+      value={slCustomLevel}
+      onChange={(e) => setSlCustomLevel(e.target.value)}
+      placeholder="ej. -200"
+      className={inputClass}
+    />
+  </div>
+) : null}
 
           <div>
             <label className="mb-1 block text-[13px] text-[#c4d0df]">Notas</label>
