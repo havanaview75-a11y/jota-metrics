@@ -629,6 +629,15 @@ const effectiveTp1Ticks =
 
 const disableRunner = effectiveTp1Ticks <= 0;
 
+const autoSL =
+  effectiveTp1Ticks < 50
+    ? -150
+    : effectiveTp1Ticks === 50
+    ? 0
+    : null;
+
+const disableSL = effectiveTp1Ticks <= 50;
+
 useEffect(() => {
   if (effectiveTp1Ticks < 0) {
     setSlLevel(effectiveTp1Ticks);
@@ -650,7 +659,9 @@ useEffect(() => {
 const totalContracts = tp1Contracts + runnerContracts;
 
 const slTicks =
-  slLevel === "MANUAL"
+  autoSL !== null
+    ? autoSL
+    : slLevel === "MANUAL"
     ? Number(slCustomLevel || 0)
     : slLevel;
 
@@ -952,23 +963,32 @@ runnerCustomLevel: runnerLevel === "OTHER"
 </div>
 
 <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">SL Level</label>
-  <select
-    value={slLevel}
-    onChange={(e) => {
-      const value = e.target.value;
-      setSlLevel(value === "MANUAL" ? value : Number(value));
-    }}
-    className={inputClass}
-  >
-    <option value={-150}>-150 ticks</option>
-    <option value={-100}>-100 ticks</option>
-    <option value={-50}>-50 ticks</option>
-    <option value="MANUAL">Manual</option>
-  </select>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">
+    SL Level
+  </label>
+
+  {disableSL ? (
+    <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
+      {autoSL ?? "-"}
+    </div>
+  ) : (
+    <select
+      value={slLevel}
+      onChange={(e) => {
+        const value = e.target.value;
+        setSlLevel(value === "MANUAL" ? value : Number(value));
+      }}
+      className={inputClass}
+    >
+      <option value={-150}>-150 ticks</option>
+      <option value={-100}>-100 ticks</option>
+      <option value={-50}>-50 ticks</option>
+      <option value="MANUAL">Manual</option>
+    </select>
+  )}
 </div>
 
-{slLevel === "MANUAL" ? (
+{slLevel === "MANUAL" && !disableSL ? (
   <div>
     <label className="mb-1 block text-[13px] text-[#c4d0df]">
       Custom SL Level
