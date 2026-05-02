@@ -224,7 +224,7 @@ function getRangeLabel(trades, range, customFrom, customTo) {
 
 function getOverviewMetrics(trades) {
   trades = trades.filter(
-    (t) => String(t.notes || "").toLowerCase() !== "no trade today"
+    (t) => String(t.notes || "").toLowerCase() !== "no trade today, The Metrics will no be affected"
   );
 
   const totalPnL = trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
@@ -279,7 +279,7 @@ function getOverviewMetrics(trades) {
 
 function getChartBars(trades) {
   return [...trades]
-    .filter((t) => String(t.notes || "").toLowerCase() !== "no trade today")
+    .filter((t) => String(t.notes || "").toLowerCase() !== "no trade today, The Metrics will no be affected")
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-5)
     .map((trade) => ({
@@ -495,7 +495,7 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
 
 function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
   const isNoTradeDay =
-    String(trade.notes || "").toLowerCase() === "no trade today";
+    String(trade.notes || "").toLowerCase() === "no trade today, The Metrics will no be affected";
   const positive = Number(trade.pnl || 0) >= 0;
 
   return (
@@ -696,7 +696,7 @@ function NewTradeScreen({
 
   useEffect(() => {
     if (noTradeDay) {
-      setNotes("No trade today, Metric will no be affected");
+      setNotes("No trade today, The Metrics will no be affected");
       setDirection("NONE");
       setContracts(0);
       setTp1Contracts(0);
@@ -709,7 +709,7 @@ function NewTradeScreen({
       setPnlInput("0");
     } else {
       setNotes((currentNotes) =>
-        currentNotes === "No trade today" ? "" : currentNotes
+        currentNotes === "No trade today, The Metrics will no be affected" ? "" : currentNotes
       );
       setDirection("LONG");
       setContracts(9);
@@ -725,7 +725,7 @@ function NewTradeScreen({
   useEffect(() => {
     if (editingTrade) {
       const editingIsNoTradeDay =
-        String(editingTrade.notes || "").toLowerCase() === "no trade today";
+        String(editingTrade.notes || "").toLowerCase() === "no trade today, The Metrics will no be affected";
 
       setMode("manual");
       setDate(editingTrade.date || today);
@@ -746,7 +746,7 @@ function NewTradeScreen({
         editingIsNoTradeDay ? "" : editingTrade.slCustomLevel || ""
       );
       setPnlInput(editingIsNoTradeDay ? "0" : String(editingTrade.pnl ?? ""));
-      setNotes(editingIsNoTradeDay ? "No trade today" : editingTrade.notes || "");
+      setNotes(editingIsNoTradeDay ? "No trade today, The Metrics will no be affected" : editingTrade.notes || "");
       setNoTradeDay(editingIsNoTradeDay);
     } else {
       setDate(today);
@@ -815,7 +815,7 @@ function NewTradeScreen({
         tp1pnl: 0,
         runnerpnl: 0,
         pnl: 0,
-        notes: "No trade today",
+        notes: "No trade today, The Metrics will no be affected",
       });
 
       setSaving(false);
