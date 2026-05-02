@@ -442,69 +442,89 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
   const positive = Number(trade.pnl || 0) >= 0;
 
   return (
-    <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2 text-[13px] text-[#e5edf7]">
-            <Circle
-              className={`h-2.5 w-2.5 fill-current ${positive ? "text-[#22c55e]" : "text-[#ef4444]"}`}
-            />
-            <span>{formatDateShort(trade.date)}</span>
-          </div>
-          <div className="mt-1 text-[12px] text-[#8fa0b7]">
-            {trade.symbol} · {trade.direction} · {trade.contracts || 1} contracts
-          </div>
+  <div className="rounded-[22px] border border-[#243041] bg-[#111827] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <div className="flex items-center gap-2 text-[13px] text-[#e5edf7]">
+          <Circle
+            className={`h-2.5 w-2.5 fill-current ${
+              positive ? "text-[#22c55e]" : "text-[#ef4444]"
+            }`}
+          />
+          <span>{formatDateShort(trade.date)}</span>
         </div>
-        <div className={`text-[20px] font-semibold ${positive ? "text-[#22c55e]" : "text-[#f87171]"}`}>
-          {formatCurrency(trade.pnl)}
+
+        <div className="mt-1 text-[12px] text-[#8fa0b7]">
+          {trade.symbol} · {trade.direction} · {trade.contracts || 1} contracts
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <StatusPill color={trade.direction === "LONG" ? "blue" : "gold"}>
-          {trade.direction}
-        </StatusPill>
-        <StatusPill color={trade.tp1hit ? "green" : "red"}>
-          {trade.tp1hit ? "TP1 ✓" : "TP1 ✕"}
-        </StatusPill>
-        <StatusPill color={trade.runnerhit ? "green" : "red"}>
-          {trade.runnerhit ? "Runner ✓" : "Runner ✕"}
-        </StatusPill>
-        <StatusPill color="blue">
-  TP1: {trade.tp1Level || 100}
-</StatusPill>
-
-<StatusPill color="gold">
-  Runner: {trade.runnerLevel || 90}
-</StatusPill>
-
-        {isAdmin ? (
-          <>
-            <button
-              onClick={() => onEdit(trade)}
-              className="ml-auto flex items-center gap-1 rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-1 text-[11px] text-[#93c5fd] transition hover:opacity-90"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit
-            </button>
-            <button
-              onClick={() => onDelete(trade.id)}
-              className="flex items-center gap-1 rounded-full border border-[#5b2121] bg-[#311616] px-3 py-1 text-[11px] text-[#fca5a5] transition hover:opacity-90"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Delete
-            </button>
-          </>
-        ) : null}
+      <div
+        className={`text-[22px] font-semibold ${
+          positive ? "text-[#22c55e]" : "text-[#f87171]"
+        }`}
+      >
+        {formatCurrency(trade.pnl)}
       </div>
+    </div>
 
-      {trade.notes ? (
-        <div className="mt-3 rounded-xl border border-[#1d2939] bg-[#0b1220] px-3 py-2 text-[12px] text-[#9fb0c6]">
-          {trade.notes}
+    <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
+      <div className="grid grid-cols-3 gap-2 text-[12px]">
+        <div className="text-[#8fa0b7]">Target</div>
+        <div className="text-center text-[#8fa0b7]">Ticks</div>
+        <div className="text-right text-[#8fa0b7]">Status</div>
+
+        <div className="font-medium text-[#e5edf7]">TP1</div>
+        <div className="text-center text-[#93c5fd]">
+          {trade.tp1Level || 100}
+        </div>
+        <div className={`text-right font-semibold ${trade.tp1hit ? "text-[#22c55e]" : "text-[#f87171]"}`}>
+          {trade.tp1hit ? "HIT ✓" : "MISS ✕"}
+        </div>
+
+        <div className="font-medium text-[#e5edf7]">Runner</div>
+        <div className="text-center text-[#fcd34d]">
+          {trade.runnerCustomLevel || trade.runnerLevel || 90}
+        </div>
+        <div className={`text-right font-semibold ${trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"}`}>
+          {trade.runnerhit ? "HIT ✓" : "MISS ✕"}
+        </div>
+      </div>
+    </div>
+
+    <div className="mt-4 flex items-center justify-between gap-2">
+      <StatusPill color={trade.direction === "LONG" ? "blue" : "gold"}>
+        {trade.direction}
+      </StatusPill>
+
+      {isAdmin ? (
+        <div className="flex gap-2">
+          <button
+            onClick={() => onEdit(trade)}
+            className="flex items-center gap-1 rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-1.5 text-[11px] text-[#93c5fd] transition hover:opacity-90"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit
+          </button>
+
+          <button
+            onClick={() => onDelete(trade.id)}
+            className="flex items-center gap-1 rounded-full border border-[#5b2121] bg-[#311616] px-3 py-1.5 text-[11px] text-[#fca5a5] transition hover:opacity-90"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Delete
+          </button>
         </div>
       ) : null}
     </div>
-  );
+
+    {trade.notes ? (
+      <div className="mt-3 rounded-xl border border-[#1d2939] bg-[#0b1220] px-3 py-2 text-[12px] text-[#9fb0c6]">
+        {trade.notes}
+      </div>
+    ) : null}
+  </div>
+);
 }
 
 function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
