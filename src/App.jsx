@@ -627,17 +627,63 @@ setSlCustomLevel("");
   }, [editingTrade, today]);
 
   const handleSubmit = async () => {
-    const pnl = Number(pnlInput || 0);
-    if (Number.isNaN(pnl)) {
-      alert("P&L must be a valid number.");
-      return;
-    }
+    const tickValue = 0.5;
 
-    const TP1_USD = 50;
-    const tp1hit = pnl >= TP1_USD;
-    const tp1pnl = tp1hit ? TP1_USD : 0;
-    const runnerpnl = tp1hit ? pnl - TP1_USD : pnl;
-    const runnerhit = tp1hit && runnerpnl > 0;
+const totalContracts = tp1Contracts + runnerContracts;
+
+const slTicks =
+  slLevel === "MANUAL"
+    ? Number(slCustomLevel || 0)
+    : slLevel;
+
+let pnl = 0;
+let tp1pnl = 0;
+let runnerpnl = 0;
+let tp1hit = false;
+let runnerhit = false;
+
+// 🟡 BE → todo 0
+if (tp1Level === "BE") {
+  pnl = 0;
+}
+
+// 🔴 TP1 falla → todo al SL
+else if (tp1Result === "SL") {
+  pnl = slTicks * tickValue * totalContracts;
+}
+
+// 🟢 TP1 pega
+else {
+  const tp1Ticks =
+    tp1Level === "OTHER"
+      ? Number(tp1CustomLevel || 0)
+      : tp1Level;
+
+  const runnerTicks =
+    runnerLevel === "OTHER"
+      ? Number(runnerCustomLevel || 0)
+      : runnerLevel;
+
+  tp1hit = true;
+
+  tp1pnl = tp1Ticks * tickValue * tp1Contracts;
+
+  // 🔥 regla: TP1 ≤ 50 → runner muere en SL
+  if (tp1Ticks <= 50) {
+    runnerpnl = slTicks * tickValue * runnerContracts;
+  } else {
+    if (runnerResult === "HIT") {
+      runnerpnl = runnerTicks * tickValue * runnerContracts;
+      runnerhit = true;
+    } else if (runnerResult === "SL") {
+      runnerpnl = slTicks * tickValue * runnerContracts;
+    } else {
+      runnerpnl = 0; // BE
+    }
+  }
+
+  pnl = tp1pnl + runnerpnl;
+}
 
     setSaving(true);
   await onSave({
