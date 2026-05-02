@@ -696,7 +696,7 @@ function NewTradeScreen({
 
   useEffect(() => {
     if (noTradeDay) {
-      setNotes("No trade today");
+      setNotes("No trade today, Metric will no be affected");
       setDirection("NONE");
       setContracts(0);
       setTp1Contracts(0);
