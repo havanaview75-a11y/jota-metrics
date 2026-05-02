@@ -765,16 +765,48 @@ runnerCustomLevel: runnerLevel === "OTHER"
             </div>
           </div>
           <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">Contratos</label>
-  <select
-    value={contracts}
-    onChange={(e) => setContracts(Number(e.target.value))}
-    className={inputClass}
-  >
-    {[2,3,4,5,6,7,8,9].map((n) => (
-      <option key={n} value={n}>{n}</option>
-    ))}
-  </select>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">Contracts</label>
+
+  <div className="grid grid-cols-3 gap-2">
+    <div>
+      <label className="mb-1 block text-[11px] text-[#8fa0b7]">Total</label>
+      <select
+        value={contracts}
+        onChange={(e) => setContracts(Number(e.target.value))}
+        className={inputClass}
+      >
+        {[2,3,4,5,6,7,8,9].map((n) => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label className="mb-1 block text-[11px] text-[#8fa0b7]">TP1</label>
+      <select
+        value={tp1Contracts}
+        onChange={(e) => setTp1Contracts(Number(e.target.value))}
+        className={inputClass}
+      >
+        {[0,1,2,3,4,5,6,7,8,9].map((n) => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label className="mb-1 block text-[11px] text-[#8fa0b7]">Runner</label>
+      <select
+        value={runnerContracts}
+        onChange={(e) => setRunnerContracts(Number(e.target.value))}
+        className={inputClass}
+      >
+        {[0,1,2,3,4,5,6,7,8,9].map((n) => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+    </div>
+  </div>
 </div>
 
 <div>
