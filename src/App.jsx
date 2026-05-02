@@ -626,6 +626,15 @@ setSlCustomLevel("");
     }
   }, [editingTrade, today]);
 
+const effectiveTp1Ticks =
+  tp1Level === "OTHER"
+    ? Number(tp1CustomLevel || 0)
+    : tp1Level === "BE"
+    ? 0
+    : Number(tp1Level);
+
+const disableRunner = effectiveTp1Ticks <= 0;
+
 useEffect(() => {
   if (disableRunner) {
     setRunnerContracts(0);
@@ -755,15 +764,6 @@ runnerCustomLevel: runnerLevel === "OTHER"
 
   const inputClass =
     "w-full rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-3 text-[14px] text-white outline-none placeholder:text-[#6f8198]";
-
-  const effectiveTp1Ticks =
-  tp1Level === "OTHER"
-    ? Number(tp1CustomLevel || 0)
-    : tp1Level === "BE"
-    ? 0
-    : Number(tp1Level);
-
-const disableRunner = effectiveTp1Ticks <= 0;
 
   return (
     <div className="space-y-4">
