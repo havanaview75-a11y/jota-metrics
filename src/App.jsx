@@ -137,7 +137,22 @@ function formatDateShort(dateStr) {
     month: "short",
     day: "numeric",
     year: "numeric",
-  });
+  });  
+}
+
+function getLastTradeableDayOfCurrentMonth() {
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  if (lastDay.getDay() === 6) {
+    lastDay.setDate(lastDay.getDate() - 1);
+  }
+
+  if (lastDay.getDay() === 0) {
+    lastDay.setDate(lastDay.getDate() - 2);
+  }
+
+  return lastDay.toISOString().slice(0, 10);
 }
 
 // ─── Filter / metric helpers ─────────────────────────────────────────────────
@@ -656,7 +671,7 @@ function NewTradeScreen({
   noTradeDay,
   setNoTradeDay,
 }) {
-  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const today = useMemo(() => getLastTradeableDayOfCurrentMonth(), []);
 
   const [mode, setMode] = useState("manual");
   const [date, setDate] = useState(editingTrade?.date || today);
@@ -949,7 +964,7 @@ function NewTradeScreen({
   </div>
 
   {/* RIGHT SIDE */}
-  <div className="flex flex-col items-end justify-start">
+  <div className="flex flex-col items-end justify-start min-w-[110px]">
     
     {/* DATE */}
     <div className="text-[13px] text-[#dbe5f3]">
@@ -995,21 +1010,7 @@ function NewTradeScreen({
 
       {mode === "manual" ? (
         <div className="space-y-3">
-          <div>
-            <label className="mb-1 block text-[13px] text-[#c4d0df]">
-              Fecha
-            </label>
-            {noTradeDay ? (
-              <div className={noTradeDisplayClass}>-</div>
-            ) : (
-              <input
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                type="date"
-                className={inputClass}
-              />
-            )}
-          </div>
+          
 
           <div>
             <label className="mb-2 block text-[13px] text-[#c4d0df]">
