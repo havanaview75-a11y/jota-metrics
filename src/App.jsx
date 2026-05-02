@@ -949,15 +949,7 @@ runnerCustomLevel: runnerLevel === "OTHER"
 </div>
 
           <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Result</label>
-  <select
-    value={tp1Result}
-    onChange={(e) => setTp1Result(e.target.value)}
-    className={inputClass}
-  >
-    <option value="HIT">HIT</option>
-    <option value="SL">SL</option>
-  </select>
+  
 </div>
 
 <div>
