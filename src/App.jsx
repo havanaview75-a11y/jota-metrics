@@ -548,6 +548,7 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
   const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
 const [tp1Level, setTp1Level] = useState(editingTrade?.tp1Level || 100);
 const [runnerLevel, setRunnerLevel] = useState(editingTrade?.runnerLevel || 90);
+const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerCustomLevel || "");
   const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
   const [notes, setNotes] = useState(editingTrade?.notes || "");
   const [csvText, setCsvText] = useState(
@@ -593,7 +594,7 @@ setRunnerLevel(90);
     const runnerhit = tp1hit && runnerpnl > 0;
 
     setSaving(true);
-    await onSave({
+  await onSave({
   id: editingTrade?.id,
   date,
   symbol: String(symbol || "MYM").toUpperCase(),
@@ -601,6 +602,9 @@ setRunnerLevel(90);
   contracts,
   tp1Level,
   runnerLevel,
+  runnerCustomLevel: runnerLevel === "OTHER"
+    ? Number(runnerCustomLevel || 0)
+    : null,
   tp1hit,
   runnerhit,
   tp1pnl,
@@ -744,14 +748,34 @@ setRunnerLevel(90);
   <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Level</label>
   <select
     value={runnerLevel}
-    onChange={(e) => setRunnerLevel(Number(e.target.value))}
+    onChange={(e) => {
+  const value = e.target.value;
+  setRunnerLevel(value === "OTHER" ? value : Number(value));
+}}
     className={inputClass}
   >
     <option value={50}>50 ticks</option>
-    <option value={90}>90 ticks</option>
-    <option value={120}>120 ticks</option>
-    <option value={155}>155 ticks</option>
+<option value={90}>90 ticks</option>
+<option value={120}>120 ticks</option>
+<option value={155}>155 ticks</option>
+<option value={175}>175 ticks</option>
+<option value={200}>200 ticks</option>
+<option value="OTHER">Other</option>
   </select>
+  {runnerLevel === "OTHER" ? (
+  <div>
+    <label className="mb-1 block text-[13px] text-[#c4d0df]">
+      Custom Runner Level
+    </label>
+    <input
+      type="number"
+      value={runnerCustomLevel}
+      onChange={(e) => setRunnerCustomLevel(e.target.value)}
+      placeholder="ej. 240"
+      className={inputClass}
+    />
+  </div>
+) : null}
 </div>
 
           <div>
