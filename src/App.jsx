@@ -808,8 +808,20 @@ runnerCustomLevel: runnerLevel === "OTHER"
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-  <div className="text-[24px] tracking-tight text-white">
-    {editingTrade ? "Editar entrada" : "Nueva entrada"}
+  <div>
+    <div className="text-[24px] tracking-tight text-white">
+      {editingTrade ? "Editar entrada" : "Nueva entrada"}
+    </div>
+
+    <label className="mt-2 flex items-center gap-2 text-[12px] text-[#c4d0df]">
+      <input
+        type="checkbox"
+        checked={noTradeDay}
+        onChange={(e) => setNoTradeDay(e.target.checked)}
+        className="h-4 w-4 accent-[#2563eb]"
+      />
+      No trade day
+    </label>
   </div>
 
   <input
