@@ -613,8 +613,6 @@ setSlCustomLevel(editingTrade.slCustomLevel || "");
 setTp1Level(100);
 setRunnerLevel(90);
 setRunnerCustomLevel("");
-setTp1Result("HIT");
-setRunnerResult("HIT");
 setTp1Contracts(1);
 setRunnerContracts(4);
 setSlLevel(-150);
@@ -693,14 +691,8 @@ else {
   if (tp1Ticks <= 50) {
     runnerpnl = slTicks * tickValue * runnerContracts;
   } else {
-    if (runnerResult === "HIT") {
-      runnerpnl = runnerTicks * tickValue * runnerContracts;
-      runnerhit = true;
-    } else if (runnerResult === "SL") {
-      runnerpnl = slTicks * tickValue * runnerContracts;
-    } else {
-      runnerpnl = 0; // BE
-    }
+    runnerpnl = runnerTicks * tickValue * runnerContracts;
+runnerhit = runnerTicks > 0;
   }
 
   pnl = tp1pnl + runnerpnl;
@@ -949,34 +941,7 @@ runnerCustomLevel: runnerLevel === "OTHER"
 </div>
 
 <div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Contracts</label>
-  <select
-    value={tp1Contracts}
-    onChange={(e) => setTp1Contracts(Number(e.target.value))}
-    className={inputClass}
-  >
-    {[1,2,3,4,5,6,7,8,9].map((n) => (
-      <option key={n} value={n}>{n}</option>
-    ))}
-  </select>
-</div>
-
-<div>
   
-</div>
-
-<div>
-  <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Contracts</label>
-  <select
-  value={runnerContracts}
-  onChange={(e) => setRunnerContracts(Number(e.target.value))}
-  className={inputClass}
-  disabled={disableRunner}
->
-    {[0,1,2,3,4,5,6,7,8,9].map((n) => (
-      <option key={n} value={n}>{n}</option>
-    ))}
-  </select>
 </div>
 
 <div>
