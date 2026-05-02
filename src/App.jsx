@@ -566,6 +566,7 @@ const [runnerCustomLevel, setRunnerCustomLevel] = useState(editingTrade?.runnerC
       setContracts(editingTrade.contracts || 9);
 setTp1Level(editingTrade.tp1Level || 100);
 setRunnerLevel(editingTrade.runnerLevel || 90);
+setRunnerCustomLevel(editingTrade.runnerCustomLevel || "");
       setPnlInput(String(editingTrade.pnl ?? ""));
       setNotes(editingTrade.notes || "");
     } else {
@@ -577,6 +578,7 @@ setRunnerLevel(editingTrade.runnerLevel || 90);
       setContracts(9);
 setTp1Level(100);
 setRunnerLevel(90);
+setRunnerCustomLevel("");
     }
   }, [editingTrade, today]);
 
@@ -601,10 +603,10 @@ setRunnerLevel(90);
   direction,
   contracts,
   tp1Level,
-  runnerLevel,
-  runnerCustomLevel: runnerLevel === "OTHER"
-    ? Number(runnerCustomLevel || 0)
-    : null,
+  runnerLevel: runnerLevel === "OTHER" ? null : runnerLevel,
+runnerCustomLevel: runnerLevel === "OTHER"
+  ? Number(runnerCustomLevel || 0)
+  : null,
   tp1hit,
   runnerhit,
   tp1pnl,
@@ -1087,6 +1089,7 @@ export default function App() {
           contracts: trade.contracts,
 tp1Level: trade.tp1Level,
 runnerLevel: trade.runnerLevel,
+runnerCustomLevel: trade.runnerCustomLevel,
           tp1hit: trade.tp1hit,
           runnerhit: trade.runnerhit,
           tp1pnl: trade.tp1pnl,
@@ -1106,6 +1109,7 @@ runnerLevel: trade.runnerLevel,
           contracts: trade.contracts,
 tp1Level: trade.tp1Level,
 runnerLevel: trade.runnerLevel,
+runnerCustomLevel: trade.runnerCustomLevel,
           tp1hit: trade.tp1hit,
           runnerhit: trade.runnerhit,
           tp1pnl: trade.tp1pnl,
