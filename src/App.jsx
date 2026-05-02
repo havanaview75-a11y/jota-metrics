@@ -885,7 +885,7 @@ function BottomNav({ active, onChange, isAdmin }) {
 // ─── App (root) ───────────────────────────────────────────────────────────────
 
 export default function App() {
-  const ADMIN_EMAIL = "havanaview75@gmail.com";
+  const ADMIN_EMAIL = "habanojo@gmail.com";
 
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true);
