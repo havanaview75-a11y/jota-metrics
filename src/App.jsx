@@ -452,7 +452,7 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
             <span>{formatDateShort(trade.date)}</span>
           </div>
           <div className="mt-1 text-[12px] text-[#8fa0b7]">
-            {trade.symbol} · {trade.direction}
+            {trade.symbol} · {trade.direction} · {trade.contracts || 1} contracts
           </div>
         </div>
         <div className={`text-[20px] font-semibold ${positive ? "text-[#22c55e]" : "text-[#f87171]"}`}>
@@ -470,6 +470,13 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
         <StatusPill color={trade.runnerhit ? "green" : "red"}>
           {trade.runnerhit ? "Runner ✓" : "Runner ✕"}
         </StatusPill>
+        <StatusPill color="blue">
+  TP1: {trade.tp1Level || 100}
+</StatusPill>
+
+<StatusPill color="gold">
+  Runner: {trade.runnerLevel || 90}
+</StatusPill>
 
         {isAdmin ? (
           <>
@@ -538,6 +545,9 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
   const [date, setDate] = useState(editingTrade?.date || today);
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
+  const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
+const [tp1Level, setTp1Level] = useState(editingTrade?.tp1Level || 100);
+const [runnerLevel, setRunnerLevel] = useState(editingTrade?.runnerLevel || 90);
   const [pnlInput, setPnlInput] = useState(editingTrade ? String(editingTrade.pnl ?? "") : "");
   const [notes, setNotes] = useState(editingTrade?.notes || "");
   const [csvText, setCsvText] = useState(
@@ -552,6 +562,9 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
       setDate(editingTrade.date || today);
       setSymbol(editingTrade.symbol || "MYM");
       setDirection(editingTrade.direction || "LONG");
+      setContracts(editingTrade.contracts || 9);
+setTp1Level(editingTrade.tp1Level || 100);
+setRunnerLevel(editingTrade.runnerLevel || 90);
       setPnlInput(String(editingTrade.pnl ?? ""));
       setNotes(editingTrade.notes || "");
     } else {
@@ -560,6 +573,9 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
       setDirection("LONG");
       setPnlInput("");
       setNotes("");
+      setContracts(9);
+setTp1Level(100);
+setRunnerLevel(90);
     }
   }, [editingTrade, today]);
 
@@ -578,17 +594,20 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
 
     setSaving(true);
     await onSave({
-      id: editingTrade?.id,
-      date,
-      symbol: String(symbol || "MYM").toUpperCase(),
-      direction,
-      tp1hit,
-      runnerhit,
-      tp1pnl,
-      runnerpnl,
-      pnl,
-      notes,
-    });
+  id: editingTrade?.id,
+  date,
+  symbol: String(symbol || "MYM").toUpperCase(),
+  direction,
+  contracts,
+  tp1Level,
+  runnerLevel,
+  tp1hit,
+  runnerhit,
+  tp1pnl,
+  runnerpnl,
+  pnl,
+  notes,
+});
     setSaving(false);
 
     if (!editingTrade) {
@@ -696,6 +715,44 @@ function NewTradeScreen({ onSave, onImport, editingTrade, onCancelEdit }) {
               </button>
             </div>
           </div>
+          <div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">Contratos</label>
+  <select
+    value={contracts}
+    onChange={(e) => setContracts(Number(e.target.value))}
+    className={inputClass}
+  >
+    {[2,3,4,5,6,7,8,9].map((n) => (
+      <option key={n} value={n}>{n}</option>
+    ))}
+  </select>
+</div>
+
+<div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">TP1 Level</label>
+  <select
+    value={tp1Level}
+    onChange={(e) => setTp1Level(Number(e.target.value))}
+    className={inputClass}
+  >
+    <option value={100}>100 ticks</option>
+    <option value={120}>120 ticks</option>
+  </select>
+</div>
+
+<div>
+  <label className="mb-1 block text-[13px] text-[#c4d0df]">Runner Level</label>
+  <select
+    value={runnerLevel}
+    onChange={(e) => setRunnerLevel(Number(e.target.value))}
+    className={inputClass}
+  >
+    <option value={50}>50 ticks</option>
+    <option value={90}>90 ticks</option>
+    <option value={120}>120 ticks</option>
+    <option value={155}>155 ticks</option>
+  </select>
+</div>
 
           <div>
             <label className="mb-1 block text-[13px] text-[#c4d0df]">P&amp;L ($)</label>
@@ -1003,12 +1060,16 @@ export default function App() {
           date: trade.date,
           symbol: trade.symbol,
           direction: trade.direction,
+          contracts: trade.contracts,
+tp1Level: trade.tp1Level,
+runnerLevel: trade.runnerLevel,
           tp1hit: trade.tp1hit,
           runnerhit: trade.runnerhit,
           tp1pnl: trade.tp1pnl,
           runnerpnl: trade.runnerpnl,
           pnl: trade.pnl,
           notes: trade.notes,
+
         })
         .eq("id", trade.id);
       error = result.error;
@@ -1018,6 +1079,9 @@ export default function App() {
           date: trade.date,
           symbol: trade.symbol,
           direction: trade.direction,
+          contracts: trade.contracts,
+tp1Level: trade.tp1Level,
+runnerLevel: trade.runnerLevel,
           tp1hit: trade.tp1hit,
           runnerhit: trade.runnerhit,
           tp1pnl: trade.tp1pnl,
