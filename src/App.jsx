@@ -479,15 +479,15 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
           {trade.tp1Level || 100}
         </div>
         <div className={`text-right font-semibold ${trade.tp1hit ? "text-[#22c55e]" : "text-[#f87171]"}`}>
-          {trade.tp1hit ? "HIT ✓" : "MISS ✕"}
+          {trade.tp1hit ? "✓" : "✕"}
         </div>
 
         <div className="font-medium text-[#e5edf7]">Runner</div>
-        <div className="text-center text-[#fcd34d]">
+        <div className="text-center font-semibold text-[#fbbf24]">
           {trade.runnerCustomLevel || trade.runnerLevel || 90}
         </div>
         <div className={`text-right font-semibold ${trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"}`}>
-          {trade.runnerhit ? "HIT ✓" : "MISS ✕"}
+          {trade.runnerhit ? "✓" : "✕"}
         </div>
       </div>
     </div>
