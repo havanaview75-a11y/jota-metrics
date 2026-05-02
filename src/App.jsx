@@ -542,7 +542,7 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
 
       {isNoTradeDay ? (
         <div className="mt-4 rounded-[16px] border border-[#5f4718] bg-[#352914] p-3 text-center text-[13px] font-medium text-[#fcd34d]">
-          No Trade Day, The Metrics will be not Affected
+          No Trade Day — Metrics Not Affected
         </div>
       ) : (
         <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
@@ -929,30 +929,44 @@ function NewTradeScreen({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <div className="text-[24px] tracking-tight text-white">
-            {editingTrade ? "Editar entrada" : "Nueva entrada"}
-          </div>
+      <div className="flex items-start justify-between gap-3">
+  
+  {/* LEFT SIDE */}
+  <div className="flex flex-col">
+    <div className="text-[24px] tracking-tight text-white">
+      {editingTrade ? "Edit Entry" : "New Entry"}
+    </div>
 
-          <label className="mt-2 flex items-center gap-2 text-[12px] text-[#c4d0df]">
-            <input
-              type="checkbox"
-              checked={noTradeDay}
-              onChange={(e) => setNoTradeDay(e.target.checked)}
-              className="h-4 w-4 accent-[#2563eb]"
-            />
-            No trade day
-          </label>
-        </div>
+    <label className="mt-2 flex items-center gap-2 text-[12px] text-[#c4d0df]">
+      <input
+        type="checkbox"
+        checked={noTradeDay}
+        onChange={(e) => setNoTradeDay(e.target.checked)}
+        className="h-4 w-4 accent-[#2563eb]"
+      />
+      No trade day
+    </label>
+  </div>
 
-        <input
-          value={noTradeDay ? "-" : symbol}
-          onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-          disabled={noTradeDay}
-          className="w-[88px] rounded-[12px] border border-[#243041] bg-[#111827] px-3 py-2 text-center text-[13px] text-white outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-        />
-      </div>
+  {/* RIGHT SIDE */}
+  <div className="flex flex-col items-end justify-start">
+    
+    {/* DATE */}
+    <div className="text-[13px] text-[#dbe5f3]">
+      {new Date(date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}
+    </div>
+
+    {/* SYMBOL BADGE */}
+    <div className="mt-2 rounded-[14px] border border-[#1e3a5f] bg-[#10253f] px-4 py-2 text-[13px] font-medium text-[#60a5fa] shadow-[0_6px_18px_rgba(0,0,0,0.25)]">
+      {symbol}
+    </div>
+
+  </div>
+</div>
 
       <div className="flex gap-2">
         <button
