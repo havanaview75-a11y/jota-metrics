@@ -646,7 +646,7 @@ useEffect(() => {
 useEffect(() => {
   if (disableRunner) {
     setRunnerContracts(0);
-    setRunnerLevel(90);
+    setRunnerLevel(0);
     setRunnerCustomLevel("");
   }
 }, [disableRunner]);
