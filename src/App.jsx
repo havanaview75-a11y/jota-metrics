@@ -630,6 +630,13 @@ const effectiveTp1Ticks =
 const disableRunner = effectiveTp1Ticks <= 0;
 
 useEffect(() => {
+  if (effectiveTp1Ticks < 0) {
+    setSlLevel(effectiveTp1Ticks);
+    setSlCustomLevel("");
+  }
+}, [effectiveTp1Ticks]);
+
+useEffect(() => {
   if (disableRunner) {
     setRunnerContracts(0);
     setRunnerLevel(90);
