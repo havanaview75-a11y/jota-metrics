@@ -1785,18 +1785,18 @@ export default function App() {
 
     return null;
   }, [
-    loading,
-    activeTab,
-    filteredTrades,
-    range,
-    symbol,
-    customFrom,
-    customTo,
-    editingTrade,
-    isAdmin,
-    noTradeDay,
-trades,
-nextEntryDate,
+  loading,
+  activeTab,
+  filteredTrades,
+  range,
+  symbol,
+  customFrom,
+  customTo,
+  editingTrade,
+  isAdmin,
+  noTradeDay,
+  trades,
+  nextEntryDate,
 ]);
 
   return (
