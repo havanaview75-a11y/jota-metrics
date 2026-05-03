@@ -155,6 +155,30 @@ function getLastTradeableDayOfCurrentMonth() {
   return lastDay.toISOString().slice(0, 10);
 }
 
+function getNextTradeDate(trades) {
+  if (!trades || trades.length === 0) {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  const usedDates = new Set(trades.map((t) => t.date));
+
+  const sorted = [...trades].sort((a, b) => b.date.localeCompare(a.date));
+  let nextDate = new Date(`${sorted[0].date}T00:00:00`);
+
+  while (true) {
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    if (nextDate.getDay() === 6) nextDate.setDate(nextDate.getDate() + 2);
+    if (nextDate.getDay() === 0) nextDate.setDate(nextDate.getDate() + 1);
+
+    const formatted = nextDate.toISOString().slice(0, 10);
+
+    if (!usedDates.has(formatted)) {
+      return formatted;
+    }
+  }
+}
+
 // ─── Filter / metric helpers ─────────────────────────────────────────────────
 
 function applyFilters(trades, range, symbol, customFrom, customTo) {
@@ -654,7 +678,7 @@ function NewTradeScreen({
   setNoTradeDay,
   trades,
 }) {
-  const today = useMemo(() => getLastTradeableDayOfCurrentMonth(), []);
+  const today = useMemo(() => getNextTradeDate(trades), [trades]);
 
   const [mode, setMode] = useState("manual");
   const [date, setDate] = useState(editingTrade?.date || today);
