@@ -785,13 +785,19 @@ function NewTradeScreen({
   }, [effectiveTp1Ticks, noTradeDay]);
 
   useEffect(() => {
-    if (noTradeDay) return;
-    if (effectiveTp1Ticks <= 50) {
-      setRunnerContracts(0);
-      setRunnerLevel(0);
-      setRunnerCustomLevel("");
-    }
-  }, [effectiveTp1Ticks, noTradeDay]);
+  if (noTradeDay) return;
+
+  if (effectiveTp1Ticks < 0) {
+    setRunnerLevel(effectiveTp1Ticks);
+    setRunnerCustomLevel("");
+    return;
+  }
+
+  if (effectiveTp1Ticks <= 50) {
+    setRunnerLevel(0);
+    setRunnerCustomLevel("");
+  }
+}, [effectiveTp1Ticks, noTradeDay]);
 
   const handleSubmit = async () => {
     const tickValue = 0.5;
@@ -853,11 +859,11 @@ if (dateAlreadyExists) {
       runnerhit = false;
     } else if (effectiveTp1Ticks < 0) {
   pnl = effectiveTp1Ticks * tickValue * totalContracts;
-  tp1pnl = pnl;
-  runnerpnl = 0;
+  tp1pnl = effectiveTp1Ticks * tickValue * tp1Contracts;
+  runnerpnl = effectiveTp1Ticks * tickValue * runnerContracts;
   tp1hit = false;
   runnerhit = false;
-    } else {
+} else {
       const tp1Ticks =
         tp1Level === "OTHER" ? Number(tp1CustomLevel || 0) : tp1Level;
 
@@ -1089,12 +1095,16 @@ if (dateAlreadyExists) {
                   Total
                 </label>
                 <div className="h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-white">
-                  {noTradeDay ? "-" : tp1Contracts + runnerContracts}
+                  {noTradeDay ? "-" : `${tp1Contracts + runnerContracts} total`}
                 </div>
               </div>
             </div>
           </div>
-
+{effectiveTp1Ticks < 0 && !noTradeDay ? (
+  <div className="rounded-[12px] border border-[#5b2121] bg-[#311616] px-3 py-2 text-[12px] font-medium text-[#f87171]">
+    Full Loss — applied to all {tp1Contracts + runnerContracts} contracts
+  </div>
+) : null}
           <div>
             <label className="mb-1 block text-[13px] text-[#c4d0df]">
               TP1 Level
@@ -1148,14 +1158,15 @@ if (dateAlreadyExists) {
               <div className={noTradeDisplayClass}>-</div>
             ) : (
               <select
-                value={runnerLevel}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setRunnerLevel(value === "OTHER" ? value : Number(value));
-                }}
-                className={inputClass}
-                disabled={disableRunner}
-              >
+  value={effectiveTp1Ticks < 0 ? effectiveTp1Ticks : runnerLevel}
+  onChange={(e) => {
+    const value = e.target.value;
+    setRunnerLevel(value === "OTHER" ? value : Number(value));
+  }}
+  className={inputClass}
+  disabled={disableRunner || effectiveTp1Ticks < 0}
+>
+                <option value={-150}>-150 ticks</option>
                 <option value={0}>0</option>
                 <option value={50}>50 ticks</option>
                 <option value={90}>90 ticks</option>
