@@ -529,17 +529,20 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
             />
             <span>{formatDateShort(trade.date)}</span>
           </div>
-
-          <div className="text-[11px] text-[#6b7a90]">
-            Total:{" "}
-            {isNoTradeDay
-              ? "-"
-              : Math.max(
-                  trade.tp1Level || 100,
-                  trade.runnerCustomLevel || trade.runnerLevel || 90
-                )}{" "}
-            {isNoTradeDay ? "" : "ticks"}
-          </div>
+              <div className="text-[11px] text-[#6b7a90]">
+  Total:{" "}
+  {isNoTradeDay
+  ? "-"
+  : Number(trade.tp1Level) < 0
+  ? trade.tp1Level
+  : Math.max(
+      trade.tp1Level || 100,
+      trade.runnerCustomLevel || trade.runnerLevel || 90
+    )
+}{" "}
+  {isNoTradeDay ? "" : "ticks"}
+</div>
+          
         </div>
 
         <div
@@ -579,9 +582,11 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
             </div>
 
             <div className="font-medium text-[#e5edf7]">Runner</div>
-            <div className="text-center font-semibold text-[#fbbf24]">
-              {trade.runnerCustomLevel || trade.runnerLevel || 90}
-            </div>
+<div className="text-center font-semibold text-[#fbbf24]">
+  {Number(trade.tp1Level) < 0
+    ? trade.tp1Level
+    : trade.runnerCustomLevel || trade.runnerLevel || 90}
+</div>
             <div
               className={`text-right font-semibold ${
                 trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"
