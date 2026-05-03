@@ -720,11 +720,11 @@ function NewTradeScreen({
   noTradeDay,
   setNoTradeDay,
   trades,
+  nextEntryDate,
 }) {
-  const nextTradeDate = useMemo(() => getNextTradeDate(trades), [trades]);
-
+  
   const [mode, setMode] = useState("manual");
-  const [date, setDate] = useState(editingTrade?.date || nextTradeDate);
+  const [date, setDate] = useState(editingTrade?.date || nextEntryDate);
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
   const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
@@ -758,11 +758,11 @@ function NewTradeScreen({
 
   useEffect(() => {
   if (editingTrade) {
-    setDate(editingTrade.date || nextTradeDate);
+    setDate(editingTrade.date || nextEntryDate);
   } else {
-    setDate(nextTradeDate);
+    setDate(nextEntryDate);
   }
-}, [editingTrade, nextTradeDate]);
+}, [editingTrade, nextEntryDate]);
 
   const noTradeDisplayClass =
     "h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-[#8fa0b7] opacity-70";
@@ -801,7 +801,7 @@ function NewTradeScreen({
         String(editingTrade.notes || "").toLowerCase() === "no trade today";
 
       setMode("manual");
-      setDate(editingTrade.date || today);
+      setDate(editingTrade.date || nextEntryDate);
       setSymbol(editingTrade.symbol || "MYM");
       setDirection(editingIsNoTradeDay ? "NONE" : editingTrade.direction || "LONG");
       setContracts(editingIsNoTradeDay ? 0 : editingTrade.contracts || 9);
@@ -990,7 +990,7 @@ if (dateAlreadyExists) {
       setNotes("");
       setDirection("LONG");
       setSymbol("MYM");
-      setDate(today);
+      setDate(nextEntryDate);
     }
   };
 
@@ -1718,6 +1718,7 @@ export default function App() {
     () => applyFilters(trades, range, symbol, customFrom, customTo),
     [trades, range, symbol, customFrom, customTo]
   );
+  const nextEntryDate = useMemo(() => getNextTradeDate(trades), [trades]);
 
   const content = useMemo(() => {
     if (loading) {
@@ -1772,6 +1773,7 @@ export default function App() {
   noTradeDay={noTradeDay}
   setNoTradeDay={setNoTradeDay}
   trades={trades}
+  nextEntryDate={nextEntryDate}
           onCancelEdit={() => {
             setEditingTrade(null);
             setNoTradeDay(false);
@@ -1793,7 +1795,8 @@ export default function App() {
     editingTrade,
     isAdmin,
     noTradeDay,
-  ]);
+trades,
+]);
 
   return (
     <div className="min-h-screen bg-[#020817] p-4 text-white">
@@ -1869,7 +1872,18 @@ export default function App() {
           setCustomTo={setCustomTo}
         />
 
-        <BottomNav active={activeTab} onChange={setActiveTab} isAdmin={isAdmin} />
+        <BottomNav
+  active={activeTab}
+  onChange={(tab) => {
+    if (tab === "new") {
+      setEditingTrade(null);
+      setNoTradeDay(false);
+    }
+
+    setActiveTab(tab);
+  }}
+  isAdmin={isAdmin}
+/>
 
         <div className="mt-4 min-h-[560px] pb-4">{content}</div>
       </div>
