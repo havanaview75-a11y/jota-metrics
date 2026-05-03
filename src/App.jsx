@@ -822,21 +822,21 @@ function NewTradeScreen({
       setNotes(editingIsNoTradeDay ? "No trade today" : editingTrade.notes || "");
       setNoTradeDay(editingIsNoTradeDay);
     } else {
-      setDate(nextTradeDate);
-      setSymbol("MYM");
-      setDirection("LONG");
-      setPnlInput("");
-      setNotes("");
-      setContracts(9);
-      setTp1Level(100);
-      setRunnerLevel(90);
-      setRunnerCustomLevel("");
-      setTp1Contracts(1);
-      setRunnerContracts(4);
-      setSlLevel(-150);
-      setSlCustomLevel("");
-    }
-  }, [editingTrade, nextTradeDate, setNoTradeDay]);
+  setDate(nextEntryDate);
+  setSymbol("MYM");
+  setDirection("LONG");
+  setPnlInput("");
+  setNotes("");
+  setContracts(9);
+  setTp1Level(100);
+  setRunnerLevel(90);
+  setRunnerCustomLevel("");
+  setTp1Contracts(1);
+  setRunnerContracts(4);
+  setSlLevel(-150);
+  setSlCustomLevel("");
+}
+}, [editingTrade, nextEntryDate, setNoTradeDay]);
 
   const effectiveTp1Ticks =
       tp1Level === "OTHER"
@@ -1796,6 +1796,7 @@ export default function App() {
     isAdmin,
     noTradeDay,
 trades,
+nextEntryDate,
 ]);
 
   return (
