@@ -609,7 +609,35 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
 ) : (
   <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
     <div className="grid grid-cols-3 gap-2 text-[12px]">
-      ...
+      <div className="text-[#8fa0b7]">Target</div>
+      <div className="text-center text-[#8fa0b7]">Ticks</div>
+      <div className="text-right text-[#8fa0b7]">Status</div>
+
+      <div className="font-medium text-[#e5edf7]">TP1</div>
+      <div className="text-center text-[#93c5fd]">
+        {trade.tp1Level || 100}
+      </div>
+      <div
+        className={`text-right font-semibold ${
+          trade.tp1hit ? "text-[#22c55e]" : "text-[#f87171]"
+        }`}
+      >
+        {trade.tp1hit ? "✓" : "✕"}
+      </div>
+
+      <div className="font-medium text-[#e5edf7]">Runner</div>
+      <div className="text-center font-semibold text-[#fbbf24]">
+        {Number(trade.tp1Level) < 0
+          ? trade.tp1Level
+          : trade.runnerCustomLevel || trade.runnerLevel || 90}
+      </div>
+      <div
+        className={`text-right font-semibold ${
+          trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"
+        }`}
+      >
+        {trade.runnerhit ? "✓" : "✕"}
+      </div>
     </div>
   </div>
 )}
@@ -693,10 +721,10 @@ function NewTradeScreen({
   setNoTradeDay,
   trades,
 }) {
-  const today = useMemo(() => getNextTradeDate(trades), [trades]);
+  const nextTradeDate = useMemo(() => getNextTradeDate(trades), [trades]);
 
   const [mode, setMode] = useState("manual");
-  const [date, setDate] = useState(editingTrade?.date || today);
+  const [date, setDate] = useState(editingTrade?.date || nextTradeDate);
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
   const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
@@ -727,11 +755,14 @@ function NewTradeScreen({
   );
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
+
   useEffect(() => {
-  if (!editingTrade && !noTradeDay && trades && trades.length > 0) {
-    setDate(getNextTradeDate(trades));
+  if (editingTrade) {
+    setDate(editingTrade.date || nextTradeDate);
+  } else {
+    setDate(nextTradeDate);
   }
-}, [trades, editingTrade, noTradeDay]);
+}, [editingTrade, nextTradeDate]);
 
   const noTradeDisplayClass =
     "h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-[#8fa0b7] opacity-70";
@@ -791,7 +822,7 @@ function NewTradeScreen({
       setNotes(editingIsNoTradeDay ? "No trade today" : editingTrade.notes || "");
       setNoTradeDay(editingIsNoTradeDay);
     } else {
-      setDate(today);
+      setDate(nextTradeDate);
       setSymbol("MYM");
       setDirection("LONG");
       setPnlInput("");
@@ -805,7 +836,7 @@ function NewTradeScreen({
       setSlLevel(-150);
       setSlCustomLevel("");
     }
-  }, [editingTrade, today, setNoTradeDay]);
+  }, [editingTrade, nextTradeDate, setNoTradeDay]);
 
   const effectiveTp1Ticks =
       tp1Level === "OTHER"
