@@ -1019,13 +1019,13 @@ if (dateAlreadyExists) {
   <div className="flex flex-col items-end justify-start min-w-[110px]">
     
     {/* DATE */}
-    <div className="text-[13px] text-[#dbe5f3]">
-      {new Date(date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}
-    </div>
+    <input
+  type="date"
+  value={date}
+  onChange={(e) => setDate(e.target.value)}
+  disabled={noTradeDay}
+  className="h-[34px] w-[120px] rounded-[12px] border border-[#243041] bg-[#111827] px-2 text-center text-[12px] text-[#dbe5f3] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+/>
 
     {/* SYMBOL BADGE */}
     <div className="mt-2 rounded-[14px] border border-[#1e3a5f] bg-[#10253f] px-4 py-2 text-[13px] font-medium text-[#60a5fa] shadow-[0_6px_18px_rgba(0,0,0,0.25)]">
