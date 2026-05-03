@@ -787,6 +787,7 @@ function NewTradeScreen({
   }, [editingTrade, today, setNoTradeDay]);
 
   const effectiveTp1Ticks =
+  const isFullLoss = Number(effectiveTp1Ticks) < 0;
     tp1Level === "OTHER"
       ? Number(tp1CustomLevel || 0)
       : tp1Level === "BE"
@@ -1142,7 +1143,7 @@ if (dateAlreadyExists) {
                 <option value={100}>+100 ticks</option>
                 <option value={120}>+120 ticks</option>
                 <option value={155}>+155 ticks</option>
-                <option value={175}>+175 ticks</option>
+                <option value={-150}>-150 ticks</option>
                 <option value="OTHER">Other</option>
               </select>
             )}
