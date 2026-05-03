@@ -675,6 +675,7 @@ function NewTradeScreen({
   onCancelEdit,
   noTradeDay,
   setNoTradeDay,
+  trades,
 }) {
   const today = useMemo(() => getLastTradeableDayOfCurrentMonth(), []);
 
@@ -818,7 +819,7 @@ function NewTradeScreen({
   const handleSubmit = async () => {
     const tickValue = 0.5;
 
-    const dateAlreadyExists = trades.some(
+   const dateAlreadyExists = (trades || []).some(
   (trade) => trade.date === date && trade.id !== editingTrade?.id
 );
 
@@ -1702,11 +1703,12 @@ export default function App() {
 
       return (
         <NewTradeScreen
-          onSave={handleSaveTrade}
-          onImport={handleImportTrades}
-          editingTrade={editingTrade}
-          noTradeDay={noTradeDay}
-          setNoTradeDay={setNoTradeDay}
+  onSave={handleSaveTrade}
+  onImport={handleImportTrades}
+  editingTrade={editingTrade}
+  noTradeDay={noTradeDay}
+  setNoTradeDay={setNoTradeDay}
+  trades={trades}
           onCancelEdit={() => {
             setEditingTrade(null);
             setNoTradeDay(false);
