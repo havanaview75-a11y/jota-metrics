@@ -511,6 +511,7 @@ function OverviewScreen({ trades, range, symbol, customFrom, customTo }) {
 function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
   const isNoTradeDay =
     String(trade.notes || "").toLowerCase() === "no trade today";
+    const isFullLoss = Number(trade.tp1Level) < 0;
   const positive = Number(trade.pnl || 0) >= 0;
 
   return (
@@ -559,44 +560,20 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
       </div>
 
       {isNoTradeDay ? (
-        <div className="mt-4 rounded-[16px] border border-[#5f4718] bg-[#352914] p-3 text-center text-[13px] font-medium text-[#fcd34d]">
-          No Trade Day — Metrics Not Affected
-        </div>
-      ) : (
-        <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
-          <div className="grid grid-cols-3 gap-2 text-[12px]">
-            <div className="text-[#8fa0b7]">Target</div>
-            <div className="text-center text-[#8fa0b7]">Ticks</div>
-            <div className="text-right text-[#8fa0b7]">Status</div>
-
-            <div className="font-medium text-[#e5edf7]">TP1</div>
-            <div className="text-center text-[#93c5fd]">
-              {trade.tp1Level || 100}
-            </div>
-            <div
-              className={`text-right font-semibold ${
-                trade.tp1hit ? "text-[#22c55e]" : "text-[#f87171]"
-              }`}
-            >
-              {trade.tp1hit ? "✓" : "✕"}
-            </div>
-
-            <div className="font-medium text-[#e5edf7]">Runner</div>
-<div className="text-center font-semibold text-[#fbbf24]">
-  {Number(trade.tp1Level) < 0
-    ? trade.tp1Level
-    : trade.runnerCustomLevel || trade.runnerLevel || 90}
-</div>
-            <div
-              className={`text-right font-semibold ${
-                trade.runnerhit ? "text-[#22c55e]" : "text-[#f87171]"
-              }`}
-            >
-              {trade.runnerhit ? "✓" : "✕"}
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="mt-4 rounded-[16px] border border-[#5f4718] bg-[#352914] p-3 text-center text-[12px] font-medium text-[#fcd34d]">
+    No Trade Day — Metrics Not Affected
+  </div>
+) : isFullLoss ? (
+  <div className="mt-4 rounded-[16px] border border-[#5b2121] bg-[#311616] p-3 text-center text-[13px] font-semibold text-[#f87171]">
+    FULL LOSS
+  </div>
+) : (
+  <div className="mt-4 rounded-[16px] border border-[#243041] bg-[#0b1220] p-3">
+    <div className="grid grid-cols-3 gap-2 text-[12px]">
+      ...
+    </div>
+  </div>
+)}
 
       <div className="mt-4 flex items-center justify-between gap-2">
         <StatusPill
