@@ -155,6 +155,44 @@ function getLastTradeableDayOfCurrentMonth() {
   return lastDay.toISOString().slice(0, 10);
 }
 
+function formatDateLocal(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function isWeekend(date) {
+  return date.getDay() === 0 || date.getDay() === 6;
+}
+
+function getNextTradeDate(trades) {
+  const usedDates = new Set((trades || []).map((t) => t.date));
+
+  if (!trades || trades.length === 0) {
+    let today = new Date();
+
+    while (isWeekend(today)) {
+      today.setDate(today.getDate() + 1);
+    }
+
+    return formatDateLocal(today);
+  }
+
+  const sorted = [...trades].sort((a, b) => b.date.localeCompare(a.date));
+  let nextDate = new Date(`${sorted[0].date}T00:00:00`);
+
+  do {
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    while (isWeekend(nextDate)) {
+      nextDate.setDate(nextDate.getDate() + 1);
+    }
+  } while (usedDates.has(formatDateLocal(nextDate)));
+
+  return formatDateLocal(nextDate);
+}
+
 function getNextTradeDate(trades) {
   if (!trades || trades.length === 0) {
     return new Date().toISOString().slice(0, 10);
@@ -712,6 +750,11 @@ function NewTradeScreen({
   );
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  useEffect(() => {
+  if (!editingTrade && !noTradeDay && trades && trades.length > 0) {
+    setDate(getNextTradeDate(trades));
+  }
+}, [trades, editingTrade, noTradeDay]);
 
   const noTradeDisplayClass =
     "h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-[#8fa0b7] opacity-70";
