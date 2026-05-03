@@ -852,11 +852,11 @@ if (dateAlreadyExists) {
       tp1hit = false;
       runnerhit = false;
     } else if (effectiveTp1Ticks < 0) {
-      pnl = slTicks * tickValue * totalContracts;
-      tp1pnl = pnl;
-      runnerpnl = 0;
-      tp1hit = false;
-      runnerhit = false;
+  pnl = effectiveTp1Ticks * tickValue * totalContracts;
+  tp1pnl = pnl;
+  runnerpnl = 0;
+  tp1hit = false;
+  runnerhit = false;
     } else {
       const tp1Ticks =
         tp1Level === "OTHER" ? Number(tp1CustomLevel || 0) : tp1Level;
