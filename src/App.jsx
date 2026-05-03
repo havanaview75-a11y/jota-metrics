@@ -787,8 +787,7 @@ function NewTradeScreen({
   }, [editingTrade, today, setNoTradeDay]);
 
   const effectiveTp1Ticks =
-  const isFullLoss = Number(effectiveTp1Ticks) < 0;
-    tp1Level === "OTHER"
+      tp1Level === "OTHER"
       ? Number(tp1CustomLevel || 0)
       : tp1Level === "BE"
       ? 0
