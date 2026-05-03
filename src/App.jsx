@@ -724,7 +724,7 @@ function NewTradeScreen({
 }) {
   
   const [mode, setMode] = useState("manual");
-  const [date, setDate] = useState(editingTrade?.date || nextEntryDate);
+  const date = editingTrade?.date || nextEntryDate;
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
   const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
@@ -755,14 +755,6 @@ function NewTradeScreen({
   );
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-  if (editingTrade) {
-    setDate(editingTrade.date || nextEntryDate);
-  } else {
-    setDate(nextEntryDate);
-  }
-}, [editingTrade, nextEntryDate]);
 
   const noTradeDisplayClass =
     "h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-[#8fa0b7] opacity-70";
@@ -801,7 +793,6 @@ function NewTradeScreen({
         String(editingTrade.notes || "").toLowerCase() === "no trade today";
 
       setMode("manual");
-      setDate(editingTrade.date || nextEntryDate);
       setSymbol(editingTrade.symbol || "MYM");
       setDirection(editingIsNoTradeDay ? "NONE" : editingTrade.direction || "LONG");
       setContracts(editingIsNoTradeDay ? 0 : editingTrade.contracts || 9);
@@ -822,7 +813,6 @@ function NewTradeScreen({
       setNotes(editingIsNoTradeDay ? "No trade today" : editingTrade.notes || "");
       setNoTradeDay(editingIsNoTradeDay);
     } else {
-  setDate(nextEntryDate);
   setSymbol("MYM");
   setDirection("LONG");
   setPnlInput("");
@@ -990,7 +980,6 @@ if (dateAlreadyExists) {
       setNotes("");
       setDirection("LONG");
       setSymbol("MYM");
-      setDate(nextEntryDate);
     }
   };
 
