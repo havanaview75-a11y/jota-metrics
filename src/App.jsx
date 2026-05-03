@@ -1305,28 +1305,18 @@ if (dateAlreadyExists) {
           </div>
 
           <div className="flex gap-2">
-            <button
-              onClick={handleSubmit}
-              disabled={saving}
-              className="w-full rounded-[14px] bg-[#2563eb] px-4 py-3 text-[14px] font-medium text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)] disabled:opacity-60"
-            >
-              {saving
-                ? "Saving..."
-                : editingTrade
-                ? "Save changes"
-                : "Save Entry"}
-            </button>
+  <button onClick={handleSubmit} disabled={saving} className="w-full rounded-[14px] bg-[#2563eb] px-4 py-3 text-[14px] font-medium text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)] disabled:opacity-60">
+    {saving ? "Saving..." : editingTrade ? "Save changes" : "Save Entry"}
+  </button>
 
-            {editingTrade ? (
-              <button
-                onClick={onCancelEdit}
-                type="button"
-                className="w-full rounded-[14px] border border-[#243041] bg-[#111827] px-4 py-3 text-[14px] font-medium text-[#c4d0df]"
-              >
-                Cancelar
-              </button>
-            ) : null}
-          </div>
+  <button
+    onClick={editingTrade ? onCancelEdit : () => setActiveTab("records")}  
+    type="button"
+    className="w-full rounded-[14px] border border-[#243041] bg-[#111827] px-4 py-3 text-[14px] font-medium text-[#c4d0df]"
+  >
+    Cancel
+  </button>
+</div>
         </div>
       ) : (
         <div className="space-y-3">
