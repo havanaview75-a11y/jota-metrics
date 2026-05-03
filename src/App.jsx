@@ -193,29 +193,6 @@ function getNextTradeDate(trades) {
   return formatDateLocal(nextDate);
 }
 
-function getNextTradeDate(trades) {
-  if (!trades || trades.length === 0) {
-    return new Date().toISOString().slice(0, 10);
-  }
-
-  const usedDates = new Set(trades.map((t) => t.date));
-
-  const sorted = [...trades].sort((a, b) => b.date.localeCompare(a.date));
-  let nextDate = new Date(`${sorted[0].date}T00:00:00`);
-
-  while (true) {
-    nextDate.setDate(nextDate.getDate() + 1);
-
-    if (nextDate.getDay() === 6) nextDate.setDate(nextDate.getDate() + 2);
-    if (nextDate.getDay() === 0) nextDate.setDate(nextDate.getDate() + 1);
-
-    const formatted = nextDate.toISOString().slice(0, 10);
-
-    if (!usedDates.has(formatted)) {
-      return formatted;
-    }
-  }
-}
 
 // ─── Filter / metric helpers ─────────────────────────────────────────────────
 
