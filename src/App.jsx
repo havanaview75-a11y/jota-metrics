@@ -1311,10 +1311,10 @@ if (dateAlreadyExists) {
               className="w-full rounded-[14px] bg-[#2563eb] px-4 py-3 text-[14px] font-medium text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)] disabled:opacity-60"
             >
               {saving
-                ? "Guardando..."
+                ? "Saving..."
                 : editingTrade
-                ? "Guardar cambios"
-                : "Guardar entrada"}
+                ? "Save changes"
+                : "Save Entry"}
             </button>
 
             {editingTrade ? (
