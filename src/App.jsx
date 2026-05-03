@@ -714,7 +714,8 @@ function NewTradeScreen({
 }) {
   
   const [mode, setMode] = useState("manual");
-  const date = editingTrade?.date || nextEntryDate;
+  const [date, setDate] = useState(editingTrade?.date || nextEntryDate);
+  //const date = editingTrade?.date || nextEntryDate;
   const [symbol, setSymbol] = useState(editingTrade?.symbol || "MYM");
   const [direction, setDirection] = useState(editingTrade?.direction || "LONG");
   const [contracts, setContracts] = useState(editingTrade?.contracts || 9);
@@ -745,6 +746,13 @@ function NewTradeScreen({
   );
   const [importMessage, setImportMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  useEffect(() => {
+  if (editingTrade) {
+    setDate(editingTrade.date || nextEntryDate);
+  } else if (!date) {
+    setDate(nextEntryDate);
+  }
+}, [editingTrade, nextEntryDate]);
 
   const noTradeDisplayClass =
     "h-[46px] flex items-center justify-center rounded-[12px] border border-[#243041] bg-[#0b1220] text-[14px] text-[#8fa0b7] opacity-70";
@@ -1310,7 +1318,7 @@ if (dateAlreadyExists) {
   </button>
 
   <button
-    onClick={editingTrade ? onCancelEdit : () => setActiveTab("records")}  
+    onClick={onCancelEdit} 
     type="button"
     className="w-full rounded-[14px] border border-[#243041] bg-[#111827] px-4 py-3 text-[14px] font-medium text-[#c4d0df]"
   >
