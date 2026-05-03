@@ -570,17 +570,7 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
             <span>{formatDateShort(trade.date)}</span>
           </div>
               <div className="text-[11px] text-[#6b7a90]">
-  Total:{" "}
-  {isNoTradeDay
-  ? "-"
-  : Number(trade.tp1Level) < 0
-  ? trade.tp1Level
-  : Math.max(
-      trade.tp1Level || 100,
-      trade.runnerCustomLevel || trade.runnerLevel || 90
-    )
-}{" "}
-  {isNoTradeDay ? "" : "ticks"}
+  {isNoTradeDay ? "-" : `${trade.contracts ?? 0} contracts`}
 </div>
           
         </div>
