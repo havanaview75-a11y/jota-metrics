@@ -803,7 +803,7 @@ function NewTradeScreen({
       setRunnerContracts(
         editingIsNoTradeDay ? 0 : editingTrade.runnerContracts || 8
       );
-      setSlLevel(editingIsNoTradeDay ? 0 : editingTrade.slLevel || -150);
+      setSlLevel(editingIsNoTradeDay ? 0 : editingTrade.slLevel || -200);
       setSlCustomLevel(
         editingIsNoTradeDay ? "" : editingTrade.slCustomLevel || ""
       );
@@ -821,7 +821,7 @@ function NewTradeScreen({
   setRunnerCustomLevel("");
   setTp1Contracts(1);
   setRunnerContracts(4);
-  setSlLevel(-150);
+  setSlLevel(-200);
   setSlCustomLevel("");
 }
 }, [editingTrade, nextEntryDate, setNoTradeDay]);
@@ -1191,7 +1191,7 @@ if (dateAlreadyExists) {
                 <option value={100}>+100 ticks</option>
                 <option value={120}>+120 ticks</option>
                 <option value={155}>+155 ticks</option>
-                <option value={-150}>-200 ticks</option>
+                <option value={-200}>-200 ticks</option>
                 <option value="OTHER">Other</option>
               </select>
             )}
@@ -1228,7 +1228,7 @@ if (dateAlreadyExists) {
   className={inputClass}
   disabled={disableRunner || effectiveTp1Ticks < 0}
 >
-                <option value={-150}>-200 ticks</option>
+                <option value={-200}>-200 ticks</option>
                 <option value={0}>0</option>
                 <option value={50}>50 ticks</option>
                 <option value={90}>90 ticks</option>
@@ -1276,7 +1276,7 @@ if (dateAlreadyExists) {
                 }}
                 className={inputClass}
               >
-                <option value={-200}>-150 ticks</option>
+                <option value={-200}>-200 ticks</option>
                 <option value={-100}>-100 ticks</option>
                 <option value={-50}>-50 ticks</option>
                 <option value="MANUAL">Manual</option>
