@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabase";
+import { ApexScreen } from "./ApexModule";
 import {
   BarChart3,
   ClipboardList,
@@ -1524,13 +1525,14 @@ function BottomNav({ active, onChange, isAdmin }) {
   const items = [
     { key: "overview", label: "Overview", icon: BarChart3 },
     { key: "records", label: "Registro", icon: ClipboardList },
+    { key: "apex", label: "Apex", icon: Target },
     ...(isAdmin ? [{ key: "new", label: "Nueva", icon: PlusCircle }] : []),
   ];
 
   return (
     <div
       className={`mt-auto grid ${
-        isAdmin ? "grid-cols-3" : "grid-cols-2"
+        isAdmin ? "grid-cols-4" : "grid-cols-3"
       } gap-0 rounded-[22px] border border-[#243041] bg-[#0f172a] p-1`}
     >
       {items.map((item) => {
@@ -1579,6 +1581,9 @@ export default function App() {
   const [authPassword, setAuthPassword] = useState("");
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [forgotEmail, setForgotEmail] = useState("");
+const [forgotSent, setForgotSent] = useState(false);
+const [showForgot, setShowForgot] = useState(false);
 
   const fetchTrades = async () => {
     setLoading(true);
@@ -1673,6 +1678,15 @@ export default function App() {
 
     if (activeTab === "new") setActiveTab("overview");
   };
+
+  const handleForgotPassword = async () => {
+  if (!forgotEmail) return;
+  await supabase.auth.resetPasswordForEmail(
+    forgotEmail.trim().toLowerCase(),
+    { redirectTo: window.location.origin }
+  );
+  setForgotSent(true);
+};
 
   const handleDeleteTrade = async (id) => {
     const confirmed = window.confirm(`Delete this trade? ID: ${id}`);
@@ -1801,6 +1815,14 @@ export default function App() {
         />
       );
     }
+    if (activeTab === "apex") {
+  return (
+    <ApexScreen
+      isAdmin={isAdmin}
+      currentUserEmail={authEmail}
+    />
+  );
+}
 
     if (activeTab === "new") {
       if (!isAdmin) {
