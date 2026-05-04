@@ -729,19 +729,24 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
   );
 }
 
-<div className="flex items-center justify-between">
-  <div>
-    <div className="text-[24px] tracking-tight text-white">Registro</div>
-    <div className="text-[12px] text-[#8fa0b7]">{trades.length} trades</div>
-  </div>
+function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-[24px] tracking-tight text-white">Registro</div>
+          <div className="text-[12px] text-[#8fa0b7]">
+            {trades.length} trades
+          </div>
+        </div>
 
-  <button
-    onClick={() => exportTradesToCsv(trades)}
-    className="rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-2 text-[11px] text-[#93c5fd] transition hover:opacity-90"
-  >
-    Export Excel
-  </button>
-</div>
+        <button
+          onClick={() => exportTradesToCsv(trades)}
+          className="rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-2 text-[11px] text-[#93c5fd] transition hover:opacity-90"
+        >
+          Export Excel
+        </button>
+      </div>
 
       {!trades.length ? (
         <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-6 text-center text-[13px] text-[#8fa0b7]">
