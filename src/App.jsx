@@ -344,6 +344,64 @@ function getChartBars(trades) {
       pnl: Number(trade.pnl || 0),
     }));
 }
+// ─── Export CSV ─────────────────────────────────────────
+
+function exportTradesToCsv(trades) {
+  if (!trades.length) {
+    alert("No records to export.");
+    return;
+  }
+
+  const headers = [
+    "Date",
+    "Symbol",
+    "Direction",
+    "Contracts",
+    "TP1 Level",
+    "Runner Level",
+    "TP1 Hit",
+    "Runner Hit",
+    "TP1 PnL",
+    "Runner PnL",
+    "Total PnL",
+    "Notes",
+  ];
+
+  const rows = trades.map((t) => [
+    t.date,
+    t.symbol,
+    t.direction,
+    t.contracts,
+    t.tp1Level,
+    t.runnerCustomLevel || t.runnerLevel,
+    t.tp1hit ? "YES" : "NO",
+    t.runnerhit ? "YES" : "NO",
+    t.tp1pnl,
+    t.runnerpnl,
+    t.pnl,
+    t.notes || "",
+  ]);
+
+  const csvContent =
+    [headers, ...rows]
+      .map((row) =>
+        row.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")
+      )
+      .join("\n");
+
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `JoTa_Metrics_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
 
 // ─── Shared UI atoms ─────────────────────────────────────────────────────────
 
@@ -671,13 +729,19 @@ function RecordCard({ trade, onDelete, onEdit, isAdmin }) {
   );
 }
 
-function RecordsScreen({ trades, onDelete, onEdit, isAdmin }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="text-[24px] tracking-tight text-white">Registro</div>
-        <div className="text-[12px] text-[#8fa0b7]">{trades.length} trades</div>
-      </div>
+<div className="flex items-center justify-between">
+  <div>
+    <div className="text-[24px] tracking-tight text-white">Registro</div>
+    <div className="text-[12px] text-[#8fa0b7]">{trades.length} trades</div>
+  </div>
+
+  <button
+    onClick={() => exportTradesToCsv(trades)}
+    className="rounded-full border border-[#1e3a5f] bg-[#10253f] px-3 py-2 text-[11px] text-[#93c5fd] transition hover:opacity-90"
+  >
+    Export Excel
+  </button>
+</div>
 
       {!trades.length ? (
         <div className="rounded-[20px] border border-[#243041] bg-[#111827] p-6 text-center text-[13px] text-[#8fa0b7]">
